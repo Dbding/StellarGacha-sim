@@ -9,536 +9,279 @@
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #0c0a1e;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-        /* 定義稀有度顏色 */
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; }
         .rarity-n { border-color: #a0a0a0; box-shadow: 0 0 5px #a0a0a0; }
         .rarity-r { border-color: #6495ed; box-shadow: 0 0 8px #6495ed; }
         .rarity-sr { border-color: #ffd700; box-shadow: 0 0 12px #ffd700; }
         .rarity-ssr { border-color: #ff4500; box-shadow: 0 0 18px #ff4500; animation: pulse-ssr 2s infinite; }
         .rarity-ur { border-color: #da70d6; box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; animation: pulse-ur 1.5s infinite; }
+        .rarity-uur { border-image: linear-gradient(45deg, gold, deeppink, lightseagreen, gold) 1; border-width: 3px; border-style: solid; animation: pulse-uur 1s infinite; }
         
-        /* 定義稀有度文字顏色 */
-        .text-rarity-n { color: #a0a0a0; }
-        .text-rarity-r { color: #6495ed; }
-        .text-rarity-sr { color: #ffd700; }
-        .text-rarity-ssr { color: #ff4500; }
-        .text-rarity-ur { color: #da70d6; }
+        .text-rarity-n { color: #a0a0a0; } .text-rarity-r { color: #6495ed; } .text-rarity-sr { color: #ffd700; } .text-rarity-ssr { color: #ff4500; } .text-rarity-ur { color: #da70d6; }
+        .text-rarity-uur { background: linear-gradient(45deg, gold, deeppink, lightseagreen); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: text-rainbow 2s linear infinite; }
 
-        @keyframes pulse-ssr {
-            0% { box-shadow: 0 0 18px #ff4500; }
-            50% { box-shadow: 0 0 25px #ff8c00; }
-            100% { box-shadow: 0 0 18px #ff4500; }
-        }
-        @keyframes pulse-ur {
-            0% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; }
-            50% { transform: scale(1.02); box-shadow: 0 0 35px #ff00ff, 0 0 15px #ffffff inset; }
-            100% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; }
-        }
+        @keyframes pulse-ssr { 0% { box-shadow: 0 0 18px #ff4500; } 50% { box-shadow: 0 0 25px #ff8c00; } 100% { box-shadow: 0 0 18px #ff4500; } }
+        @keyframes pulse-ur { 0% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; } 50% { transform: scale(1.02); box-shadow: 0 0 35px #ff00ff, 0 0 15px #ffffff inset; } 100% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; } }
+        @keyframes pulse-uur { 0% { transform: scale(1.02); } 50% { transform: scale(1.05); } 100% { transform: scale(1.02); } }
+        @keyframes text-rainbow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        #divinationCanvas { cursor: crosshair; background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); }
         
-        #divinationCanvas {
-            cursor: crosshair;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-        }
-
-        .card-enter {
-            animation: card-enter-animation 0.5s ease-out forwards;
-            opacity: 0;
-            transform: scale(0.8) translateY(20px);
-        }
-
-        @keyframes card-enter-animation {
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+        .card-enter { animation: card-reveal 0.7s ease-out forwards; opacity: 0; }
+        @keyframes card-reveal {
+            0% { opacity: 0; transform: perspective(1000px) rotateY(-100deg) scale(0.8); }
+            70% { opacity: 1; transform: perspective(1000px) rotateY(10deg) scale(1.1); }
+            100% { opacity: 1; transform: perspective(1000px) rotateY(0deg) scale(1); }
         }
         
-        /* 畫面震動動畫 */
-        @keyframes screen-shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-            20%, 40%, 60%, 80% { transform: translateX(8px); }
-        }
-        .shake-animation {
-            animation: screen-shake 0.5s ease-in-out;
-        }
+        @keyframes screen-shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); } 20%, 40%, 60%, 80% { transform: translateX(8px); } }
+        @keyframes screen-shake-hard { 0%, 100% { transform: translate(0, 0) rotate(0); } 10%, 50%, 90% { transform: translate(-12px, 8px) rotate(-2deg); } 30%, 70% { transform: translate(12px, -8px) rotate(2deg); } }
+        .shake-animation { animation: screen-shake 0.5s ease-in-out; }
+        .shake-animation-hard { animation: screen-shake-hard 0.6s ease-in-out; }
+        
+        .grayscale { filter: grayscale(100%); transition: filter 0.5s ease; }
+        .fragment-toast { animation: float-up 1.5s ease-out forwards; }
+        @keyframes float-up { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-50px); } }
+        
+        .rarity-flash-overlay { animation: flash-effect 1.2s ease-out forwards; }
+        @keyframes flash-effect { from { opacity: 0.7; } to { opacity: 0; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
+    <div id="rarity-flash-overlay" class="fixed inset-0 z-[100] pointer-events-none opacity-0"></div>
+
     <div id="main-container" class="relative w-full max-w-4xl mx-auto bg-slate-900/50 rounded-2xl shadow-2xl p-4 sm:p-6 border border-slate-700 transition-transform duration-500">
-        <!-- 作者資訊 -->
-        <p class="absolute top-4 left-6 text-xl font-bold text-white/70 select-none z-10">作者：盯布丁</p>
-
-        <!-- 資訊按鈕 -->
-        <button id="info-btn" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </button>
-
-        <header class="text-center mb-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜</h1>
-            <p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p>
-        </header>
-
-        <!-- 星空畫布 -->
-        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg">
-            <canvas id="divinationCanvas"></canvas>
-            <div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none">
-                <p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳滑鼠，連結星辰...</p>
-            </div>
+        <div class="absolute top-4 left-6 flex items-center space-x-4 z-10">
+            <p class="text-xl font-bold text-white/70 select-none">作者：盯布丁</p>
+            <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
         </div>
-
-        <!-- 控制與資訊面板 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
-            <div class="bg-slate-800/60 p-3 rounded-lg">
-                <h3 class="font-bold text-purple-300">保底計數</h3>
-                <p>SR或以上: <span id="sr-pity-counter" class="font-bold text-yellow-400">0</span> / 10</p>
-                <p>SSR或以上: <span id="ssr-pity-counter" class="font-bold text-orange-400">0</span> / 90</p>
-            </div>
-            <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center">
-                <h3 class="font-bold text-purple-300">稀有度統計</h3>
-                <div class="grid grid-cols-3 gap-1 text-sm mt-1">
-                    <p>N: <span id="n-counter" class="font-bold text-gray-400">0</span></p>
-                    <p>R: <span id="r-counter" class="font-bold text-blue-400">0</span></p>
-                    <p>SR: <span id="sr-counter" class="font-bold text-yellow-400">0</span></p>
-                    <p>SSR: <span id="ssr-stat-counter" class="font-bold text-orange-400">0</span></p>
-                    <p>UR: <span id="ur-stat-counter" class="font-bold text-violet-400">0</span></p>
+        <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
+            <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
+        </div>
+        <header class="text-center mb-4 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p></header>
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
+            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
+            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
+            <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
+        </div>
+        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳滑鼠，連結星辰...</p></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-center">
+            <div class="bg-slate-800/60 p-3 rounded-lg"><h3 class="font-bold text-purple-300">保底計數</h3><p>SR+: <span id="sr-pity-counter" class="font-bold text-yellow-400">0</span>/10</p><p>SSR+: <span id="ssr-pity-counter" class="font-bold text-orange-400">0</span>/90</p></div>
+            <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center"><h3 class="font-bold text-purple-300">稀有度統計</h3><div class="grid grid-cols-3 gap-1 text-sm mt-1"><p>N: <span id="n-counter" class="font-bold text-gray-400">0</span></p><p>R: <span id="r-counter" class="font-bold text-blue-400">0</span></p><p>SR: <span id="sr-counter" class="font-bold text-yellow-400">0</span></p><p>SSR: <span id="ssr-stat-counter" class="font-bold text-orange-400">0</span></p><p>UR: <span id="ur-stat-counter" class="font-bold text-violet-400">0</span></p><p>UUR: <span id="uur-stat-counter" class="font-bold text-rarity-uur">0</span></p></div></div>
+            <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center"><h3 class="font-bold text-purple-300">累計召喚</h3><p class="text-2xl font-bold text-cyan-300" id="total-pulls-counter">0</p></div>
+            <div class="flex flex-col items-center justify-center space-y-2">
+                <button id="draw-1" class="w-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 1 (💎40)</button>
+                <button id="draw-10" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 10 (💎400)</button>
+                <div class="flex w-full space-x-2">
+                    <button id="draw-fragment-1" class="w-1/2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x1 (✨100)</button>
+                    <button id="draw-fragment-10" class="w-1/2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x10 (✨1000)</button>
                 </div>
             </div>
-            <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center">
-                 <h3 class="font-bold text-purple-300">累計召喚</h3>
-                 <p class="text-2xl font-bold text-cyan-300" id="total-pulls-counter">0</p>
-            </div>
-            <div class="flex items-center justify-center space-x-4">
-                <button id="draw-1" class="w-1/2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                    召喚 x 1
-                </button>
-                <button id="draw-10" class="w-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                    召喚 x 10
-                </button>
-            </div>
         </div>
-
-        <!-- 抽卡結果顯示區 -->
-        <div id="results-container" class="min-h-[150px] bg-slate-800/50 p-4 rounded-lg border border-slate-700">
-            <h2 class="text-xl font-bold text-center mb-4 text-slate-300">召喚結果</h2>
-            <div id="results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                <!-- 卡片會在這裡生成 -->
-            </div>
-        </div>
+        <div id="results-container" class="min-h-[150px] bg-slate-800/50 p-4 rounded-lg border border-slate-700"><h2 class="text-xl font-bold text-center mb-4 text-slate-300">召喚結果</h2><div id="results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div></div>
     </div>
-    
-    <!-- 傳說殿堂 -->
-    <div id="hall-of-legends-container" class="w-full max-w-4xl mx-auto mt-8 p-4 bg-slate-900/50 rounded-2xl border border-yellow-400/50 shadow-2xl hidden">
-        <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 mb-4">傳說殿堂</h2>
-        <div id="hall-of-legends-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <!-- 收集到的 UR 角色會在這裡展示 -->
-        </div>
-    </div>
-
-    <!-- 機率資訊 Modal -->
-    <div id="info-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden">
-        <div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600">
-            <button id="close-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚詳情</h2>
-            <div id="info-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                <!-- 機率資訊會在這裡動態生成 -->
-            </div>
-        </div>
-    </div>
-
+    <div id="hall-of-legends-container" class="w-full max-w-4xl mx-auto mt-8 p-4 bg-slate-900/50 rounded-2xl border border-yellow-400/50 shadow-2xl hidden"><h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 mb-4">傳說殿堂</h2><div id="hall-of-legends-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div></div>
+    <div id="info-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-info-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚詳情</h2><div id="info-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
+    <div id="history-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-history-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚歷史</h2><div id="history-modal-body" class="space-y-2 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
 
     <script>
         // --- 資料設定 ---
         const CHARACTERS = {
-            N: ['史萊姆', '哥布林', '小妖精', '野狼', '巨大蝙蝠'],
-            R: ['見習騎士', '魔法學徒', '精靈射手', '獸人戰士', '矮人礦工'],
-            SR: ['皇家騎士團長', '大魔導師', '月光祭司', '暗影刺客', '獅鷲騎士'],
-            SSR: ['炎龍騎士', '深淵魔王', '聖光女神', '時空大法師', '風暴射手'],
-            UR: [
-                { id: 1, name: '創世之神．伊莉苟絲', title: '萬物之始' },
-                { id: 2, name: '滅世魔龍．巴哈姆特', title: '終焉之息' },
-                { id: 3, name: '星際旅人．凱恩', title: '時空漫遊者' }
-            ]
+            N: ['史萊姆', '哥布林', '小妖精', '野狼', '巨大蝙蝠'], R: ['見習騎士', '魔法學徒', '精靈射手', '獸人戰士', '矮人礦工'], SR: ['皇家騎士團長', '大魔導師', '月光祭司', '暗影刺客', '獅鷲騎士'], SSR: ['炎龍騎士', '深淵魔王', '聖光女神', '時空大法師', '風暴射手'], UR: [{ id: 1, name: '創世之神．伊莉苟絲', title: '萬物之始' }, { id: 2, name: '滅世魔龍．巴哈姆特', title: '終焉之息' }, { id: 3, name: '星際旅人．凱恩', title: '時空漫遊者' }], UUR: [{ id: 101, name: '布丁', title: '萬物的真理' }]
         };
-
-        const PROBABILITIES = {
-            UR: 0.005,  // 0.5%
-            SSR: 0.025, // 2.5%
-            SR: 0.10,   // 10%
-            R: 0.50,    // 50%
-            N: 0.37,    // 37%
-        };
-        
-        const PITY_CONFIG = {
-            SR: 10,
-            SSR: 90
-        };
+        const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.10, R: 0.50, N: 0.37 };
+        const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
+        const PITY_CONFIG = { SR: 10, SSR: 90 };
+        const DRAW_COST = { single: 40, multi: 400, fragmentSingle: 100, fragmentMulti: 1000 };
+        const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 200, UUR: 200 };
+        const DAILY_REWARD = 1600;
 
         // --- 狀態管理 ---
         let pityCounters = { sr: 0, ssr: 0 };
-        let rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0 };
+        let rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
+        let collectedCharacters = new Set();
         let collectedURs = new Set();
+        let collectedUURs = new Set();
+        let gachaHistory = [];
         let totalPulls = 0;
+        let stardustStones = 5000;
+        let fragments = 0;
         let isDrawingAnimation = false;
 
         // --- DOM 元素 ---
-        const mainContainer = document.getElementById('main-container');
-        const canvas = document.getElementById('divinationCanvas');
-        const ctx = canvas.getContext('2d');
-        const canvasContainer = document.getElementById('canvas-container');
-        const canvasOverlay = document.getElementById('canvas-overlay');
-        const draw1Btn = document.getElementById('draw-1');
-        const draw10Btn = document.getElementById('draw-10');
-        const resultsGrid = document.getElementById('results-grid');
-        const srPityCounterEl = document.getElementById('sr-pity-counter');
-        const ssrPityCounterEl = document.getElementById('ssr-pity-counter');
-        const totalPullsCounterEl = document.getElementById('total-pulls-counter');
-        const nCounterEl = document.getElementById('n-counter');
-        const rCounterEl = document.getElementById('r-counter');
-        const srCounterEl = document.getElementById('sr-counter');
-        const ssrStatCounterEl = document.getElementById('ssr-stat-counter');
-        const urStatCounterEl = document.getElementById('ur-stat-counter');
-        const hallOfLegendsContainer = document.getElementById('hall-of-legends-container');
-        const hallOfLegendsGrid = document.getElementById('hall-of-legends-grid');
-        const infoBtn = document.getElementById('info-btn');
-        const infoModal = document.getElementById('info-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const infoModalBody = document.getElementById('info-modal-body');
+        const dom = {
+            mainContainer: document.getElementById('main-container'),
+            rarityFlashOverlay: document.getElementById('rarity-flash-overlay'),
+            canvas: document.getElementById('divinationCanvas'), canvasContainer: document.getElementById('canvas-container'), canvasOverlay: document.getElementById('canvas-overlay'),
+            draw1Btn: document.getElementById('draw-1'), draw10Btn: document.getElementById('draw-10'), drawFragmentBtn1: document.getElementById('draw-fragment-1'), drawFragmentBtn10: document.getElementById('draw-fragment-10'),
+            resultsGrid: document.getElementById('results-grid'),
+            srPityCounterEl: document.getElementById('sr-pity-counter'), ssrPityCounterEl: document.getElementById('ssr-pity-counter'),
+            totalPullsCounterEl: document.getElementById('total-pulls-counter'),
+            nCounterEl: document.getElementById('n-counter'), rCounterEl: document.getElementById('r-counter'), srCounterEl: document.getElementById('sr-counter'), ssrStatCounterEl: document.getElementById('ssr-stat-counter'), urStatCounterEl: document.getElementById('ur-stat-counter'), uurStatCounterEl: document.getElementById('uur-stat-counter'),
+            hallOfLegendsContainer: document.getElementById('hall-of-legends-container'), hallOfLegendsGrid: document.getElementById('hall-of-legends-grid'),
+            infoBtn: document.getElementById('info-btn'), infoModal: document.getElementById('info-modal'), closeInfoModalBtn: document.getElementById('close-info-modal-btn'), infoModalBody: document.getElementById('info-modal-body'),
+            historyBtn: document.getElementById('history-btn'), historyModal: document.getElementById('history-modal'), closeHistoryModalBtn: document.getElementById('close-history-modal-btn'), historyModalBody: document.getElementById('history-modal-body'),
+            stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
+            claimDailyBtn: document.getElementById('claim-daily-btn'),
+        };
+        const ctx = dom.canvas.getContext('2d');
 
-        // --- 星空畫布相關 ---
-        let stars = [];
-        let isDrawing = false;
-        let constellationPoints = [];
-
-        function resizeCanvas() {
-            canvas.width = canvasContainer.clientWidth;
-            canvas.height = canvasContainer.clientHeight;
-        }
-
-        function generateStars(count) {
-            stars = [];
-            for (let i = 0; i < count; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5 + 0.5,
-                    alpha: Math.random() * 0.5 + 0.5
-                });
-            }
-        }
-
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(star => {
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-                ctx.fill();
-            });
-        }
+        // --- 星空畫布 ---
+        let stars = [], isDrawing = false, constellationPoints = [], particles = [];
+        function resizeCanvas() { dom.canvas.width = dom.canvasContainer.clientWidth; dom.canvas.height = dom.canvasContainer.clientHeight; }
+        function generateStars(count) { stars = []; for (let i = 0; i < count; i++) { stars.push({ x: Math.random() * dom.canvas.width, y: Math.random() * dom.canvas.height, radius: Math.random() * 1.5 + 0.5, alpha: Math.random() * 0.5 + 0.5 }); } }
+        function drawStars() { ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height); stars.forEach(star => { ctx.beginPath(); ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`; ctx.fill(); }); }
+        function drawConstellation(stroke) { if (constellationPoints.length < 2) return; ctx.beginPath(); ctx.moveTo(constellationPoints[0].x, constellationPoints[0].y); for (let i = 1; i < constellationPoints.length; i++) { ctx.lineTo(constellationPoints[i].x, constellationPoints[i].y); } ctx.strokeStyle = stroke || 'rgba(255, 255, 255, 0.7)'; ctx.lineWidth = 2; ctx.shadowColor = 'white'; ctx.shadowBlur = 10; ctx.stroke(); ctx.shadowBlur = 0; }
         
-        function drawConstellation(stroke) {
-            if (constellationPoints.length < 2) return;
-            ctx.beginPath();
-            ctx.moveTo(constellationPoints[0].x, constellationPoints[0].y);
-            for (let i = 1; i < constellationPoints.length; i++) {
-                ctx.lineTo(constellationPoints[i].x, constellationPoints[i].y);
-            }
-            ctx.strokeStyle = stroke || 'rgba(255, 255, 255, 0.7)';
-            ctx.lineWidth = 2;
-            ctx.shadowColor = 'white';
-            ctx.shadowBlur = 10;
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+        class Particle {
+            constructor(x, y, color) { this.x = x; this.y = y; this.color = color; this.size = Math.random() * 5 + 2; this.life = 1; const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 4 + 1; this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed; }
+            update() { this.x += this.vx; this.y += this.vy; this.life -= 0.02; this.size *= 0.98; }
+            draw() { ctx.globalAlpha = this.life; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
         }
+        function createParticleBurst(x, y, color, count) { for (let i = 0; i < count; i++) { particles.push(new Particle(x, y, color)); } }
+        function handleParticles() { for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); particles[i].draw(); if (particles[i].life <= 0) { particles.splice(i, 1); } } }
 
         // --- 抽卡核心邏輯 ---
-        function getRarity(isSrPity, isSsrPity) {
-            if (isSsrPity) {
-                return Math.random() < (PROBABILITIES.UR / (PROBABILITIES.UR + PROBABILITIES.SSR)) ? 'UR' : 'SSR';
-            }
-            if (isSrPity) {
-                const srPlusProb = PROBABILITIES.SR + PROBABILITIES.SSR + PROBABILITIES.UR;
-                const rand = Math.random();
-                if (rand < PROBABILITIES.UR / srPlusProb) return 'UR';
-                if (rand < (PROBABILITIES.UR + PROBABILITIES.SSR) / srPlusProb) return 'SSR';
-                return 'SR';
-            }
-            const rand = Math.random();
-            let cumulative = 0;
-            for (const rarity in PROBABILITIES) {
-                cumulative += PROBABILITIES[rarity];
-                if (rand < cumulative) { return rarity; }
-            }
-            return 'N';
-        }
-
-        function drawOneCharacter(isSrPity = false, isSsrPity = false) {
-            const rarity = getRarity(isSrPity, isSsrPity);
-            let character;
-            if (rarity === 'UR') {
-                character = CHARACTERS.UR[Math.floor(Math.random() * CHARACTERS.UR.length)];
-            } else {
-                const charactersOfRarity = CHARACTERS[rarity];
-                const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)];
-                character = { name };
-            }
-            
-            if (rarity === 'UR' || rarity === 'SSR') {
-                pityCounters.ssr = 0;
-                pityCounters.sr = 0;
-            } else if (rarity === 'SR') {
-                pityCounters.sr = 0;
-            }
-            return { ...character, rarity };
-        }
-
-        function performDraw(count) {
+        function getRarity(probSet, isSrPity = false, isSsrPity = false) { if (probSet === PROBABILITIES) { if (isSsrPity) return Math.random() < (probSet.UR / (probSet.UR + probSet.SSR)) ? 'UR' : 'SSR'; if (isSrPity) { const srPlusProb = probSet.SR + probSet.SSR + probSet.UR; const rand = Math.random(); if (rand < probSet.UR / srPlusProb) return 'UR'; if (rand < (probSet.UR + probSet.SSR) / srPlusProb) return 'SSR'; return 'SR'; } } const rand = Math.random(); let cumulative = 0; for (const rarity in probSet) { cumulative += probSet[rarity]; if (rand < cumulative) { return rarity; } } return 'SSR'; }
+        function drawOneCharacter(probSet, isSrPity = false, isSsrPity = false) { const rarity = getRarity(probSet, isSrPity, isSsrPity); let character; const charactersOfRarity = CHARACTERS[rarity]; if (rarity === 'UR' || rarity === 'UUR') { character = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; } else { const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; character = { name }; } if (probSet === PROBABILITIES) { if (rarity === 'UR' || rarity === 'SSR') { pityCounters.ssr = 0; pityCounters.sr = 0; } else if (rarity === 'SR') { pityCounters.sr = 0; } } return { ...character, rarity }; }
+        function processDraw(count, poolType) {
             if (isDrawingAnimation) return;
+            const isFragmentPool = poolType === 'fragment';
+            let cost;
+            if (isFragmentPool) { cost = count === 1 ? DRAW_COST.fragmentSingle : DRAW_COST.fragmentMulti; } 
+            else { cost = count === 1 ? DRAW_COST.single : DRAW_COST.multi; }
+            const currency = isFragmentPool ? fragments : stardustStones;
+            if (currency < cost) { alert(isFragmentPool ? '碎片不足！' : '星塵石不足！'); return; }
+            if (constellationPoints.length < 3) { alert('請先在星空中繪製至少連結3顆星的星座！'); return; }
+            
+            if (isFragmentPool) { fragments -= cost; } else { stardustStones -= cost; }
             isDrawingAnimation = true;
             toggleButtons(false);
-            resultsGrid.innerHTML = '';
+            dom.resultsGrid.innerHTML = '';
 
             const results = [];
             for (let i = 0; i < count; i++) {
-                totalPulls++;
-                pityCounters.sr++;
-                pityCounters.ssr++;
-                const isSsrPity = pityCounters.ssr >= PITY_CONFIG.SSR;
-                const isSrPity = pityCounters.sr >= PITY_CONFIG.SR;
-                const character = drawOneCharacter(isSrPity, isSsrPity);
+                if (!isFragmentPool) { totalPulls++; pityCounters.sr++; pityCounters.ssr++; }
+                const character = drawOneCharacter(isFragmentPool ? PROBABILITIES_FRAGMENT : PROBABILITIES, pityCounters.sr >= PITY_CONFIG.SR, pityCounters.ssr >= PITY_CONFIG.SSR);
+                const charIdentifier = character.id || character.name;
+                character.isDuplicate = collectedCharacters.has(charIdentifier);
                 results.push(character);
                 rarityCounts[character.rarity]++;
-                if (character.rarity === 'UR') {
-                    collectedURs.add(character.id);
-                }
+                if (character.isDuplicate) { const fragmentsGained = FRAGMENT_REWARDS[character.rarity]; fragments += fragmentsGained; character.fragmentsGained = fragmentsGained; } 
+                else { collectedCharacters.add(charIdentifier); }
+                if (character.rarity === 'UR') { collectedURs.add(character.id); }
+                if (character.rarity === 'UUR') { collectedUURs.add(character.id); }
             }
-            
-            results.sort((a, b) => {
-                const order = { UR: 5, SSR: 4, SR: 3, R: 2, N: 1 };
-                return order[b.rarity] - order[a.rarity];
-            });
-
-            playConstellationAnimation(results[0].rarity).then(() => {
-                displayResults(results);
-                updateCounters();
-                updateHallOfLegends();
-                toggleButtons(true);
-                isDrawingAnimation = false;
-            });
+            gachaHistory.unshift({ date: new Date(), results });
+            if (gachaHistory.length > 50) gachaHistory.pop();
+            results.sort((a, b) => { const order = { UUR: 6, UR: 5, SSR: 4, SR: 3, R: 2, N: 1 }; return order[b.rarity] - order[a.rarity]; });
+            playConstellationAnimation(results[0].rarity).then(() => { displayResults(results); updateAllUI(); toggleButtons(true); isDrawingAnimation = false; });
         }
         
-        // --- 動畫效果 ---
+        // --- 動畫 ---
         function playConstellationAnimation(highestRarity) {
             return new Promise(resolve => {
-                if (highestRarity === 'SSR' || highestRarity === 'UR') {
-                    mainContainer.classList.add('shake-animation');
-                    setTimeout(() => mainContainer.classList.remove('shake-animation'), 500);
+                const rarityColors = { SSR: 'rgba(255, 69, 0, 0.9)', UR: 'rgba(218, 112, 214, 0.9)', UUR: 'linear-gradient(45deg, gold, deeppink, lightseagreen, gold)' };
+                if (highestRarity in rarityColors) {
+                    dom.rarityFlashOverlay.style.background = rarityColors[highestRarity];
+                    dom.rarityFlashOverlay.classList.add('rarity-flash-overlay');
+                    setTimeout(() => dom.rarityFlashOverlay.classList.remove('rarity-flash-overlay'), 1200);
                 }
 
-                let startTime = null;
-                const duration = 1500;
-
+                if (highestRarity === 'UUR') { dom.mainContainer.classList.add('shake-animation-hard'); setTimeout(() => dom.mainContainer.classList.remove('shake-animation-hard'), 600); }
+                else if (highestRarity === 'SSR' || highestRarity === 'UR') { dom.mainContainer.classList.add('shake-animation'); setTimeout(() => dom.mainContainer.classList.remove('shake-animation'), 500); }
+                
+                let startTime = null; const duration = 1500;
                 function animate(timestamp) {
-                    if (!startTime) startTime = timestamp;
-                    const progress = (timestamp - startTime) / duration;
-                    const glow = Math.sin(progress * Math.PI) * 30;
-
-                    drawStars();
-                    
+                    if (!startTime) startTime = timestamp; const progress = (timestamp - startTime) / duration; const glow = Math.sin(progress * Math.PI) * 30;
+                    drawStars(); handleParticles();
                     let strokeStyle;
-                    if (highestRarity === 'UR') {
-                        const hue = (progress * 360) % 360;
-                        strokeStyle = `hsl(${hue}, 100%, 70%)`;
-                        ctx.shadowColor = strokeStyle;
-                    } else if (highestRarity === 'SSR') {
-                        strokeStyle = 'rgba(255, 69, 0, 0.9)';
-                        ctx.shadowColor = 'rgba(255, 100, 0, 1)';
-                    } else if (highestRarity === 'SR') {
-                        strokeStyle = 'rgba(255, 215, 0, 0.9)';
-                        ctx.shadowColor = 'rgba(255, 215, 0, 1)';
-                    } else {
-                        strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                        ctx.shadowColor = 'white';
+                    if (highestRarity === 'UUR') { const hue = (progress * 720) % 360; strokeStyle = `hsl(${hue}, 100%, 70%)`; ctx.shadowColor = strokeStyle; ctx.lineWidth = 5; }
+                    else if (highestRarity === 'UR') { const hue = (progress * 360) % 360; strokeStyle = `hsl(${hue}, 100%, 70%)`; ctx.shadowColor = strokeStyle; ctx.lineWidth = 3; } 
+                    else if (highestRarity === 'SSR') { strokeStyle = 'rgba(255, 69, 0, 0.9)'; ctx.shadowColor = 'rgba(255, 100, 0, 1)'; ctx.lineWidth = 3; } 
+                    else if (highestRarity === 'SR') { strokeStyle = 'rgba(255, 215, 0, 0.9)'; ctx.shadowColor = 'rgba(255, 215, 0, 1)'; ctx.lineWidth = 3; } 
+                    else { strokeStyle = 'rgba(255, 255, 255, 0.7)'; ctx.shadowColor = 'white'; ctx.lineWidth = 2; }
+                    ctx.shadowBlur = glow; drawConstellation(strokeStyle); ctx.shadowBlur = 0;
+                    if (progress >= 1) {
+                        if (constellationPoints.length > 0) {
+                            const center = constellationPoints.reduce((acc, p) => ({x: acc.x + p.x, y: acc.y + p.y}), {x: 0, y: 0});
+                            center.x /= constellationPoints.length; center.y /= constellationPoints.length;
+                            createParticleBurst(center.x, center.y, strokeStyle, 100);
+                            constellationPoints = [];
+                        }
+                        if (particles.length === 0) { drawStars(); resolve(); return; }
                     }
-                    
-                    ctx.lineWidth = 3;
-                    ctx.shadowBlur = glow;
-                    drawConstellation(strokeStyle);
-                    ctx.shadowBlur = 0;
-
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        constellationPoints = [];
-                        drawStars();
-                        resolve();
-                    }
+                    requestAnimationFrame(animate);
                 }
                 requestAnimationFrame(animate);
             });
         }
 
         // --- UI 更新 ---
-        function displayResults(results) {
-            resultsGrid.innerHTML = '';
-            results.forEach((char, index) => {
-                const card = document.createElement('div');
-                card.className = `card-enter border-2 rounded-lg p-2 text-center bg-slate-900/70 rarity-${char.rarity.toLowerCase()}`;
-                card.style.animationDelay = `${index * 50}ms`;
-                
-                const rarityEl = document.createElement('p');
-                rarityEl.className = 'font-bold text-lg';
-                rarityEl.textContent = char.rarity;
+        function displayResults(results) { dom.resultsGrid.innerHTML = ''; results.forEach((char, index) => { const card = document.createElement('div'); card.className = `relative card-enter border-2 rounded-lg p-2 text-center bg-slate-900/70 rarity-${char.rarity.toLowerCase()}`; card.style.animationDelay = `${index * 50}ms`; card.innerHTML = `<p class="font-bold text-lg">${char.rarity}</p><p class="text-base">${char.name}</p>`; dom.resultsGrid.appendChild(card); if (char.isDuplicate) { setTimeout(() => { card.classList.add('grayscale'); const ownedText = document.createElement('div'); ownedText.className = 'absolute inset-0 flex items-center justify-center text-white font-bold text-2xl bg-black/50'; ownedText.textContent = '已有'; card.appendChild(ownedText); const toast = document.createElement('div'); toast.className = 'absolute -top-2 right-0 text-cyan-400 font-bold fragment-toast'; toast.textContent = `+${char.fragmentsGained} 碎片`; card.appendChild(toast); }, 1000); } }); }
+        function updateHallOfLegends() { if (collectedURs.size === 0 && collectedUURs.size === 0) return; dom.hallOfLegendsContainer.classList.remove('hidden'); dom.hallOfLegendsGrid.innerHTML = ''; const sortedUURs = Array.from(collectedUURs).sort(); sortedUURs.forEach(id => { const data = CHARACTERS.UUR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-uur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-slate-900/50 via-purple-900/50 to-slate-900/50 col-span-1 sm:col-span-2 md:col-span-3'; card.innerHTML = `<p class="text-2xl font-bold text-rarity-uur">${data.name}</p><p class="text-lg text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); const sortedURs = Array.from(collectedURs).sort(); sortedURs.forEach(id => { const data = CHARACTERS.UR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-ur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-900/50 to-slate-900/50'; card.innerHTML = `<p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-white">${data.name}</p><p class="text-sm text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); }
+        function updateCounters() { dom.srPityCounterEl.textContent = pityCounters.sr; dom.ssrPityCounterEl.textContent = pityCounters.ssr; dom.totalPullsCounterEl.textContent = totalPulls; dom.nCounterEl.textContent = rarityCounts.N; dom.rCounterEl.textContent = rarityCounts.R; dom.srCounterEl.textContent = rarityCounts.SR; dom.ssrStatCounterEl.textContent = rarityCounts.SSR; dom.urStatCounterEl.textContent = rarityCounts.UR; dom.uurStatCounterEl.textContent = rarityCounts.UUR; dom.stardustStonesCounter.textContent = stardustStones; dom.fragmentsCounter.textContent = fragments; }
+        function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn10.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
+        function updateAllUI() { updateCounters(); updateHallOfLegends(); toggleButtons(true); }
 
-                const nameEl = document.createElement('p');
-                nameEl.className = 'text-base';
-                nameEl.textContent = char.name;
-                
-                card.appendChild(rarityEl);
-                card.appendChild(nameEl);
-                resultsGrid.appendChild(card);
-            });
-        }
-        
-        function updateHallOfLegends() {
-            if (collectedURs.size === 0) return;
-            
-            hallOfLegendsContainer.classList.remove('hidden');
-            hallOfLegendsGrid.innerHTML = '';
-            
-            const sortedURs = Array.from(collectedURs).sort();
-
-            sortedURs.forEach(urId => {
-                const urData = CHARACTERS.UR.find(c => c.id === urId);
-                if (!urData) return;
-
-                const card = document.createElement('div');
-                card.className = 'rarity-ur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-900/50 to-slate-900/50';
-                
-                card.innerHTML = `
-                    <p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-white">${urData.name}</p>
-                    <p class="text-sm text-yellow-300/80 mt-1">${urData.title}</p>
-                `;
-                hallOfLegendsGrid.appendChild(card);
-            });
-        }
-
-        function updateCounters() {
-            srPityCounterEl.textContent = pityCounters.sr;
-            ssrPityCounterEl.textContent = pityCounters.ssr;
-            totalPullsCounterEl.textContent = totalPulls;
-            nCounterEl.textContent = rarityCounts.N;
-            rCounterEl.textContent = rarityCounts.R;
-            srCounterEl.textContent = rarityCounts.SR;
-            ssrStatCounterEl.textContent = rarityCounts.SSR;
-            urStatCounterEl.textContent = rarityCounts.UR;
-        }
-        
-        function toggleButtons(enabled) {
-            draw1Btn.disabled = !enabled;
-            draw10Btn.disabled = !enabled;
-        }
-
-        // --- 資訊 Modal 相關 ---
+        // --- Modal 相關 ---
         function populateInfoModal() {
-            infoModalBody.innerHTML = '';
-            const rarities = ['UR', 'SSR', 'SR', 'R', 'N']; // 顯示順序
+            dom.infoModalBody.innerHTML = '';
+            
+            const mainPoolTitle = document.createElement('h4');
+            mainPoolTitle.className = 'text-lg font-bold text-yellow-300 border-b border-yellow-300/50 pb-1 mb-2';
+            mainPoolTitle.textContent = '星塵石召喚';
+            dom.infoModalBody.appendChild(mainPoolTitle);
 
-            rarities.forEach(rarity => {
-                const prob = PROBABILITIES[rarity] * 100;
+            ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => {
+                const prob = PROBABILITIES[rarity];
                 const characters = CHARACTERS[rarity];
-                
                 const section = document.createElement('div');
-                section.className = 'pb-2 border-b border-slate-700 last:border-b-0';
-                
-                const title = document.createElement('h3');
-                title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`;
-                title.textContent = `${rarity} (基礎機率: ${prob.toFixed(1).replace('.0', '')}%)`;
-                
-                const list = document.createElement('p');
-                list.className = 'text-slate-300 text-sm mt-1 break-words';
-                
-                let names = (rarity === 'UR')
-                    ? characters.map(c => c.name).join('、')
-                    : characters.join('、');
-                
-                list.textContent = `包含角色：${names}`;
-                
-                section.appendChild(title);
-                section.appendChild(list);
-                infoModalBody.appendChild(section);
+                section.className = 'pb-2';
+                const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、');
+                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
+                dom.infoModalBody.appendChild(section);
+            });
+
+            const fragmentPoolTitle = document.createElement('h4');
+            fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4';
+            fragmentPoolTitle.textContent = '碎片召喚';
+            dom.infoModalBody.appendChild(fragmentPoolTitle);
+
+            ['UUR', 'UR', 'SSR'].forEach(rarity => {
+                const prob = PROBABILITIES_FRAGMENT[rarity];
+                const characters = CHARACTERS[rarity];
+                const section = document.createElement('div');
+                section.className = 'pb-2';
+                const names = (rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、');
+                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
+                dom.infoModalBody.appendChild(section);
             });
         }
-
-        // --- 事件監聽 ---
-        draw1Btn.addEventListener('click', () => {
-            if (constellationPoints.length < 3) {
-                 alert('請先在星空中繪製至少連結3顆星的星座！');
-                 return;
-            }
-            performDraw(1);
-        });
-
-        draw10Btn.addEventListener('click', () => {
-            if (constellationPoints.length < 3) {
-                 alert('請先在星空中繪製至少連結3顆星的星座！');
-                 return;
-            }
-            performDraw(10);
-        });
-
-        canvas.addEventListener('mousedown', (e) => {
-            if (isDrawingAnimation) return;
-            isDrawing = true;
-            constellationPoints = [{ x: e.offsetX, y: e.offsetY }];
-            canvasOverlay.style.display = 'none';
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing || isDrawingAnimation) return;
-            constellationPoints.push({ x: e.offsetX, y: e.offsetY });
-            drawStars();
-            drawConstellation();
-        });
-
-        canvas.addEventListener('mouseup', () => { isDrawing = false; });
-        canvas.addEventListener('mouseleave', () => { isDrawing = false; });
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            generateStars(100);
-            drawStars();
-        });
+        function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = entry.date.toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
         
-        infoBtn.addEventListener('click', () => infoModal.classList.remove('hidden'));
-        closeModalBtn.addEventListener('click', () => infoModal.classList.add('hidden'));
-        infoModal.addEventListener('click', (e) => {
-            if (e.target === infoModal) { // 點擊背景關閉
-                infoModal.classList.add('hidden');
-            }
-        });
+        // --- 事件監聽 ---
+        function setupEventListeners() {
+            dom.draw1Btn.addEventListener('click', () => { processDraw(1, 'main'); });
+            dom.draw10Btn.addEventListener('click', () => { processDraw(10, 'main'); });
+            dom.drawFragmentBtn1.addEventListener('click', () => { processDraw(1, 'fragment'); });
+            dom.drawFragmentBtn10.addEventListener('click', () => { processDraw(10, 'fragment'); });
+            dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); });
+            
+            dom.canvas.addEventListener('mousedown', (e) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x: e.offsetX, y: e.offsetY }]; dom.canvasOverlay.style.display = 'none'; });
+            dom.canvas.addEventListener('mousemove', (e) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x: e.offsetX, y: e.offsetY }); drawStars(); drawConstellation(); });
+            dom.canvas.addEventListener('mouseup', () => { isDrawing = false; }); dom.canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+            window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
+            
+            dom.infoBtn.addEventListener('click', () => { dom.infoModal.classList.remove('hidden'); });
+            dom.closeInfoModalBtn.addEventListener('click', () => { dom.infoModal.classList.add('hidden'); });
+            dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); });
+            dom.closeHistoryModalBtn.addEventListener('click', () => { dom.historyModal.classList.add('hidden'); });
+        }
 
         // --- 初始化 ---
-        function init() {
-            resizeCanvas();
-            generateStars(100);
-            drawStars();
-            updateCounters();
-            populateInfoModal();
-        }
-
+        function init() { resizeCanvas(); generateStars(100); drawStars(); updateAllUI(); populateInfoModal(); setupEventListeners(); }
         init();
     </script>
 </body>
