@@ -53,7 +53,7 @@
 
     <div id="main-container" class="relative w-full max-w-4xl mx-auto bg-slate-900/50 rounded-2xl shadow-2xl p-4 sm:p-6 border border-slate-700 transition-transform duration-500">
         <div class="absolute top-4 left-6 flex items-center space-x-4 z-10">
-            <p class="text-xl font-bold text-white/70 select-none">作者：盯布丁</p>
+            <p class="text-lg sm:text-xl font-bold text-white/70 select-none">作者：盯布丁</p>
             <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
         </div>
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
@@ -61,16 +61,12 @@
         </div>
         <header class="text-center mb-4 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜池</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p></header>
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
-            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
-            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
+            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-lg sm:text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
+            <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-lg sm:text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
             <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
         </div>
         
-        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg">
-            <canvas id="divinationCanvas"></canvas>
-            <div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳，連結星辰...</p></div>
-            <button id="skip-animation-btn" class="absolute bottom-4 right-4 bg-white/20 text-white font-bold py-2 px-4 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-colors z-20 hidden">跳過</button>
-        </div>
+        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳，連結星辰...</p></div><button id="skip-animation-btn" class="absolute bottom-4 right-4 bg-white/20 text-white font-bold py-2 px-4 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-colors z-20 hidden">跳過</button></div>
         
         <!-- Summon Buttons -->
         <div class="my-4 space-y-3">
@@ -264,11 +260,19 @@
         // --- UI 更新 ---
         function displayResultsOnCanvas(results) {
             const container = dom.canvasContainer;
-            const cardWidth = 100;
-            const cardHeight = 120;
-            const gap = 10;
-            const totalWidth = (cardWidth + gap) * 5 - gap;
+            const containerWidth = container.clientWidth;
             
+            const cardCount = results.length;
+            const maxCardsPerRow = cardCount <= 5 ? 5 : 5;
+            const gap = containerWidth * 0.02; // Responsive gap
+            
+            let cardWidth = (containerWidth - (gap * (maxCardsPerRow + 1))) / maxCardsPerRow;
+            if (cardCount < maxCardsPerRow && cardCount > 1) {
+                 cardWidth = (containerWidth - (gap * (cardCount + 1))) / cardCount;
+            }
+            if (cardWidth > 100) cardWidth = 100; // Max card width
+            const cardHeight = cardWidth * 1.2;
+
             results.forEach((char, index) => {
                 const card = document.createElement('div');
                 card.className = `absolute card-on-canvas border-2 rounded-lg p-2 text-center bg-slate-900/70 rarity-${char.rarity.toLowerCase()}`;
@@ -277,18 +281,32 @@
                 card.style.animationDelay = `${index * 80}ms`;
 
                 let row, col;
-                if (results.length <= 5) { // Single row
+                if (cardCount <= maxCardsPerRow) { // Single row
                     row = 0;
                     col = index;
-                    const startX = (container.clientWidth - (results.length * (cardWidth + gap) - gap)) / 2;
+                    const totalWidth = cardCount * cardWidth + (cardCount - 1) * gap;
+                    const startX = (containerWidth - totalWidth) / 2;
                     card.style.left = `${startX + col * (cardWidth + gap)}px`;
                     card.style.top = `${(container.clientHeight - cardHeight) / 2}px`;
                 } else { // Two rows
-                    row = Math.floor(index / 5);
-                    col = index % 5;
-                    const startX = (container.clientWidth - totalWidth) / 2;
-                    const startY = (container.clientHeight - (2 * cardHeight + gap)) / 2;
-                    card.style.left = `${startX + col * (cardWidth + gap)}px`;
+                    const cardsInFirstRow = Math.ceil(cardCount / 2);
+                    const cardsInSecondRow = cardCount - cardsInFirstRow;
+                    
+                    if (index < cardsInFirstRow) { // First row
+                        row = 0;
+                        col = index;
+                        const totalWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * gap;
+                        const startX = (containerWidth - totalWidth) / 2;
+                        card.style.left = `${startX + col * (cardWidth + gap)}px`;
+                    } else { // Second row
+                        row = 1;
+                        col = index - cardsInFirstRow;
+                        const totalWidth = cardsInSecondRow * cardWidth + (cardsInSecondRow - 1) * gap;
+                        const startX = (containerWidth - totalWidth) / 2;
+                        card.style.left = `${startX + col * (cardWidth + gap)}px`;
+                    }
+                    const totalHeight = 2 * cardHeight + gap;
+                    const startY = (container.clientHeight - totalHeight) / 2;
                     card.style.top = `${startY + row * (cardHeight + gap)}px`;
                 }
                 
@@ -433,3 +451,4 @@
     </script>
 </body>
 </html>
+"
