@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; transition: background-color 0.5s ease; }
         .rarity-n { border-color: #a0a0a0; box-shadow: 0 0 5px #a0a0a0; }
         .rarity-r { border-color: #6495ed; box-shadow: 0 0 8px #6495ed; }
         .rarity-sr { border-color: #ffd700; box-shadow: 0 0 12px #ffd700; }
@@ -45,6 +45,22 @@
         
         .rarity-flash-overlay { animation: flash-effect 1.2s ease-out forwards; }
         @keyframes flash-effect { from { opacity: 0.7; } to { opacity: 0; } }
+
+        /* Pudding Theme */
+        .pudding-mode { background-color: #FFD166; }
+        .pudding-mode #main-container { background-color: #FFF8E1; border-color: #8D6E63; color: #6D4C41; }
+        .pudding-mode header h1 { background-image: linear-gradient(to right, #D1913C, #FFD194); }
+        .pudding-mode header p, .pudding-mode #main-container .text-slate-300 { color: #A1887F; }
+        .pudding-mode .bg-slate-800\/50 { background-color: #F5E8C7; }
+        .pudding-mode .font-bold.text-purple-300 { color: #8D6E63; }
+        .pudding-mode #draw-1 { background-image: linear-gradient(to right, #FFB347, #FFCC33); }
+        .pudding-mode #draw-10 { background-image: linear-gradient(to right, #FFA726, #FFB74D); }
+        .pudding-mode #draw-fragment-1, .pudding-mode #draw-fragment-3 { background-image: linear-gradient(to right, #D1913C, #FFD194); }
+        .pudding-mode #claim-daily-btn { background-color: #A1887F; }
+        .pudding-mode #claim-daily-btn:hover { background-color: #8D6E63; }
+        .pudding-mode #canvas-container { border-color: #A1887F; }
+        .pudding-mode .card-on-canvas { background-color: #fffaf0; }
+        .pudding-mode .text-white\/70, .pudding-mode .text-slate-400, .pudding-mode .text-slate-500 { color: #8D6E63; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -60,11 +76,12 @@
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
             <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
         </div>
-        <header class="text-center mb-4 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜池</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p></header>
+        <header class="text-center mb-2 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜池</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p><p id="date-display" class="text-slate-500 text-sm mt-1"></p></header>
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-lg sm:text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-lg sm:text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
             <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
+            <button id="luck-btn" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-4 rounded-full transition-colors">結算本日運勢</button>
         </div>
         
         <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg">
@@ -85,6 +102,7 @@
     <div id="info-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-info-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚詳情</h2><div id="info-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="history-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-history-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚歷史</h2><div id="history-modal-body" class="space-y-2 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="collection-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-collection-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">角色圖鑑</h2><div id="collection-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
+    <div id="luck-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 text-center"><button id="close-luck-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">本日運勢</h2><div id="luck-modal-body" class="space-y-2"></div></div></div>
 
     <script>
         // --- 資料設定 ---
@@ -97,6 +115,8 @@
         const DRAW_COST = { single: 60, multi: 600, fragmentSingle: 100, fragmentMulti: 300 };
         const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
+        const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的'];
+        const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '巨蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘'];
 
         // --- 狀態管理 ---
         let pityCounters = { sr: 0, ssr: 0 };
@@ -112,9 +132,11 @@
         let animationFrameId = null;
         let animationResolve = null;
         let animationHighestRarity = null;
+        let isPuddingModeActive = false;
 
         // --- DOM 元素 ---
         const dom = {
+            body: document.body,
             mainContainer: document.getElementById('main-container'),
             rarityFlashOverlay: document.getElementById('rarity-flash-overlay'),
             canvas: document.getElementById('divinationCanvas'), canvasContainer: document.getElementById('canvas-container'), canvasOverlay: document.getElementById('canvas-overlay'),
@@ -123,9 +145,11 @@
             infoBtn: document.getElementById('info-btn'), infoModal: document.getElementById('info-modal'), closeInfoModalBtn: document.getElementById('close-info-modal-btn'), infoModalBody: document.getElementById('info-modal-body'),
             historyBtn: document.getElementById('history-btn'), historyModal: document.getElementById('history-modal'), closeHistoryModalBtn: document.getElementById('close-history-modal-btn'), historyModalBody: document.getElementById('history-modal-body'),
             collectionBtn: document.getElementById('collection-btn'), collectionModal: document.getElementById('collection-modal'), closeCollectionModalBtn: document.getElementById('close-collection-modal-btn'), collectionModalBody: document.getElementById('collection-modal-body'),
+            luckBtn: document.getElementById('luck-btn'), luckModal: document.getElementById('luck-modal'), closeLuckModalBtn: document.getElementById('close-luck-modal-btn'), luckModalBody: document.getElementById('luck-modal-body'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'),
             skipAnimationBtn: document.getElementById('skip-animation-btn'),
+            dateDisplay: document.getElementById('date-display'),
             canvasSrPity: document.getElementById('canvas-sr-pity'), canvasSsrPity: document.getElementById('canvas-ssr-pity'),
             canvasTotalPulls: document.getElementById('canvas-total-pulls'),
             canvasNStat: document.getElementById('canvas-n-stat'), canvasRStat: document.getElementById('canvas-r-stat'), canvasSrStat: document.getElementById('canvas-sr-stat'), canvasSsrStat: document.getElementById('canvas-ssr-stat'), canvasUrStat: document.getElementById('canvas-ur-stat'), canvasUurStat: document.getElementById('canvas-uur-stat'),
@@ -175,7 +199,13 @@
                 if (character.isDuplicate) { const fragmentsGained = FRAGMENT_REWARDS[character.rarity]; fragments += fragmentsGained; character.fragmentsGained = fragmentsGained; } 
                 else { collectedCharacters.add(charIdentifier); }
                 if (character.rarity === 'UR') { collectedURs.add(character.id); }
-                if (character.rarity === 'UUR') { collectedUURs.add(character.id); }
+                if (character.rarity === 'UUR') {
+                    collectedUURs.add(character.id);
+                    if (!isPuddingModeActive) {
+                        activatePuddingMode();
+                        isPuddingModeActive = true;
+                    }
+                }
             }
             gachaHistory.unshift({ date: new Date(), results });
             if (gachaHistory.length > 50) gachaHistory.pop();
@@ -359,39 +389,56 @@
         function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn3.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
         function updateAllUI() { updateCounters(); updateHallOfLegends(); toggleButtons(true); }
 
-        // --- Modal 相關 ---
+        // --- Modal & Features ---
+        function setDate() { const today = new Date(); dom.dateDisplay.textContent = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; }
+        function activatePuddingMode() { dom.body.classList.add('pudding-mode'); }
+        function calculateAndShowLuck() {
+            const today = new Date().toDateString();
+            const todayPulls = gachaHistory.filter(entry => entry.date.toDateString() === today).flatMap(entry => entry.results);
+            
+            const adj = CONSTELLATION_ADJECTIVES[Math.floor(Math.random() * CONSTELLATION_ADJECTIVES.length)];
+            const noun = CONSTELLATION_NOUNS[Math.floor(Math.random() * CONSTELLATION_NOUNS.length)];
+            const constellationName = `${adj}${noun}座`;
+
+            if (todayPulls.length === 0) {
+                dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="mt-4 text-slate-400">尚未召喚，無法窺探今日的命運。快來描繪屬於你的星辰吧！</p>`;
+                dom.luckModal.classList.remove('hidden');
+                return;
+            }
+            
+            let highestRarity = 'N';
+            const rarityOrder = ['N', 'R', 'SR', 'SSR', 'UR', 'UUR'];
+            todayPulls.forEach(pull => {
+                if (rarityOrder.indexOf(pull.rarity) > rarityOrder.indexOf(highestRarity)) {
+                    highestRarity = pull.rarity;
+                }
+            });
+
+            const luckLevels = {
+                UUR: { title: '大吉', color: 'text-rarity-uur', text: '雖然是最好的運氣，但同時也被認為之後的運勢會呈下降趨勢。 所以有幸抽到「大吉」的話，要注意努力維持現狀哟。' },
+                UR: { title: '吉', color: 'text-rarity-ur', text: '僅次於「大吉」的第二好的運勢。 沒有大吉那樣的運勢急劇下降的可能性，一段時間內可以放心。' },
+                SSR: { title: '中吉', color: 'text-rarity-ssr', text: '運氣是「吉」的一半。 根據個人努力今後可能運氣會上升。' },
+                SR: { title: '小吉', color: 'text-rarity-sr', text: '「中吉」和「末吉」之間的運勢，說不上好但也不算差。 據說只會有小小的幸福，但不宜過度追求。' },
+                R: { title: '末吉', color: 'text-rarity-r', text: '排在「吉」最後的運勢，是「吉」之中最差的。 但是也意味著有許多上升空間，可以期待今後的變化。' },
+                N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' }
+            };
+            
+            const luck = luckLevels[highestRarity];
+            dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><p class="mt-2 text-slate-300">${luck.text}</p>`;
+            dom.luckModal.classList.remove('hidden');
+        }
         function populateInfoModal() {
             dom.infoModalBody.innerHTML = '';
-            
             const mainPoolTitle = document.createElement('h4');
             mainPoolTitle.className = 'text-lg font-bold text-yellow-300 border-b border-yellow-300/50 pb-1 mb-2';
             mainPoolTitle.textContent = '星塵石召喚';
             dom.infoModalBody.appendChild(mainPoolTitle);
-
-            ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => {
-                const prob = PROBABILITIES[rarity];
-                const characters = CHARACTERS[rarity];
-                const section = document.createElement('div');
-                section.className = 'pb-2';
-                const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、');
-                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
-                dom.infoModalBody.appendChild(section);
-            });
-
+            ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => { const prob = PROBABILITIES[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
             const fragmentPoolTitle = document.createElement('h4');
             fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4';
             fragmentPoolTitle.textContent = '碎片召喚';
             dom.infoModalBody.appendChild(fragmentPoolTitle);
-
-            ['UUR', 'UR', 'SSR'].forEach(rarity => {
-                const prob = PROBABILITIES_FRAGMENT[rarity];
-                const characters = CHARACTERS[rarity];
-                const section = document.createElement('div');
-                section.className = 'pb-2';
-                const names = (rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、');
-                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
-                dom.infoModalBody.appendChild(section);
-            });
+            ['UUR', 'UR', 'SSR'].forEach(rarity => { const prob = PROBABILITIES_FRAGMENT[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
         }
         function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = entry.date.toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
         function populateCollectionModal() {
@@ -399,34 +446,23 @@
             ['UUR', 'UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => {
                 const characters = CHARACTERS[rarity];
                 if (!characters || characters.length === 0) return;
-
                 const section = document.createElement('div');
                 section.className = 'pb-2 border-b border-slate-700 last:border-b-0';
-                
                 const title = document.createElement('h3');
                 title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`;
                 title.textContent = rarity;
                 section.appendChild(title);
-
                 const grid = document.createElement('div');
                 grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2';
-                
                 characters.forEach(char => {
-                    const charIdentifier = char.id || char.name;
+                    const charIdentifier = (typeof char === 'object') ? char.id : char;
                     const isCollected = collectedCharacters.has(charIdentifier);
-                    
                     const card = document.createElement('div');
                     card.className = `p-2 rounded-lg text-center ${isCollected ? `rarity-${rarity.toLowerCase()} bg-slate-900/70` : 'bg-slate-700/50'}`;
-                    
-                    if (isCollected) {
-                        card.innerHTML = `<p class="font-bold">${char.name}</p>${char.title ? `<p class="text-xs text-yellow-300/80">${char.title}</p>` : ''}`;
-                    } else {
-                        card.innerHTML = `<p class="font-bold text-slate-400">???</p>`;
-                        card.classList.add('grayscale');
-                    }
+                    if (isCollected) { card.innerHTML = `<p class="font-bold">${char.name || char}</p>${char.title ? `<p class="text-xs text-yellow-300/80">${char.title}</p>` : ''}`; } 
+                    else { card.innerHTML = `<p class="font-bold text-slate-400">???</p>`; card.classList.add('grayscale'); }
                     grid.appendChild(card);
                 });
-
                 section.appendChild(grid);
                 dom.collectionModalBody.appendChild(section);
             });
@@ -440,40 +476,18 @@
             dom.drawFragmentBtn3.addEventListener('click', () => { processDraw(3, 'fragment'); });
             dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); });
             
-            // Mouse Events
-            dom.canvas.addEventListener('mousedown', (e) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x: e.offsetX, y: e.offsetY }]; dom.canvasOverlay.style.display = 'none'; });
-            dom.canvas.addEventListener('mousemove', (e) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x: e.offsetX, y: e.offsetY }); drawStars(); drawConstellation(); });
-            dom.canvas.addEventListener('mouseup', () => { isDrawing = false; });
-            dom.canvas.addEventListener('mouseleave', () => { isDrawing = false; });
-
-            // Touch Events
-            dom.canvas.addEventListener('touchstart', (e) => {
-                if (isDrawingAnimation) return;
-                e.preventDefault();
-                const rect = dom.canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                isDrawing = true;
-                constellationPoints = [{ x, y }];
-                dom.canvasOverlay.style.display = 'none';
-            }, { passive: false });
-
-            dom.canvas.addEventListener('touchmove', (e) => {
-                if (!isDrawing || isDrawingAnimation) return;
-                e.preventDefault();
-                const rect = dom.canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                constellationPoints.push({ x, y });
-                drawStars();
-                drawConstellation();
-            }, { passive: false });
-
-            dom.canvas.addEventListener('touchend', () => { isDrawing = false; });
-            dom.canvas.addEventListener('touchcancel', () => { isDrawing = false; });
-
+            // Mouse & Touch Events
+            const startDrawing = (x, y) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x, y }]; dom.canvasOverlay.style.display = 'none'; };
+            const draw = (x, y) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x, y }); drawStars(); drawConstellation(); };
+            const stopDrawing = () => { isDrawing = false; };
+            dom.canvas.addEventListener('mousedown', (e) => startDrawing(e.offsetX, e.offsetY));
+            dom.canvas.addEventListener('mousemove', (e) => draw(e.offsetX, e.offsetY));
+            dom.canvas.addEventListener('mouseup', stopDrawing);
+            dom.canvas.addEventListener('mouseleave', stopDrawing);
+            dom.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const rect = dom.canvas.getBoundingClientRect(); const touch = e.touches[0]; startDrawing(touch.clientX - rect.left, touch.clientY - rect.top); }, { passive: false });
+            dom.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const rect = dom.canvas.getBoundingClientRect(); const touch = e.touches[0]; draw(touch.clientX - rect.left, touch.clientY - rect.top); }, { passive: false });
+            dom.canvas.addEventListener('touchend', stopDrawing);
+            dom.canvas.addEventListener('touchcancel', stopDrawing);
 
             window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
             
@@ -483,17 +497,13 @@
             dom.closeHistoryModalBtn.addEventListener('click', () => { dom.historyModal.classList.add('hidden'); });
             dom.collectionBtn.addEventListener('click', () => { populateCollectionModal(); dom.collectionModal.classList.remove('hidden'); });
             dom.closeCollectionModalBtn.addEventListener('click', () => { dom.collectionModal.classList.add('hidden'); });
-            dom.skipAnimationBtn.addEventListener('click', () => {
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                    animationFrameId = null;
-                    endAnimation();
-                }
-            });
+            dom.luckBtn.addEventListener('click', () => { calculateAndShowLuck(); });
+            dom.closeLuckModalBtn.addEventListener('click', () => { dom.luckModal.classList.add('hidden'); });
+            dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
         }
 
         // --- 初始化 ---
-        function init() { resizeCanvas(); generateStars(100); drawStars(); updateAllUI(); populateInfoModal(); setupEventListeners(); }
+        function init() { resizeCanvas(); generateStars(100); drawStars(); updateAllUI(); populateInfoModal(); setupEventListeners(); setDate(); }
         init();
     </script>
 </body>
