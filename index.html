@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星辰占卜 - 角色召喚</title>
+    <title>星辰占卜池 - 角色召喚</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
@@ -59,23 +59,23 @@
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
             <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
         </div>
-        <header class="text-center mb-4 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p></header>
+        <header class="text-center mb-4 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜池</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p></header>
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
             <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
         </div>
-        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳滑鼠，連結星辰...</p></div></div>
+        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳滑鼠，連結星辰...</p></div><button id="skip-animation-btn" class="absolute bottom-4 right-4 bg-white/20 text-white font-bold py-2 px-4 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-colors z-20 hidden">跳過</button></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-center">
             <div class="bg-slate-800/60 p-3 rounded-lg"><h3 class="font-bold text-purple-300">保底計數</h3><p>SR+: <span id="sr-pity-counter" class="font-bold text-yellow-400">0</span>/10</p><p>SSR+: <span id="ssr-pity-counter" class="font-bold text-orange-400">0</span>/90</p></div>
             <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center"><h3 class="font-bold text-purple-300">稀有度統計</h3><div class="grid grid-cols-3 gap-1 text-sm mt-1"><p>N: <span id="n-counter" class="font-bold text-gray-400">0</span></p><p>R: <span id="r-counter" class="font-bold text-blue-400">0</span></p><p>SR: <span id="sr-counter" class="font-bold text-yellow-400">0</span></p><p>SSR: <span id="ssr-stat-counter" class="font-bold text-orange-400">0</span></p><p>UR: <span id="ur-stat-counter" class="font-bold text-violet-400">0</span></p><p>UUR: <span id="uur-stat-counter" class="font-bold text-rarity-uur">0</span></p></div></div>
             <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center"><h3 class="font-bold text-purple-300">累計召喚</h3><p class="text-2xl font-bold text-cyan-300" id="total-pulls-counter">0</p></div>
             <div class="flex flex-col items-center justify-center space-y-2">
-                <button id="draw-1" class="w-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 1 (💎40)</button>
-                <button id="draw-10" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 10 (💎400)</button>
+                <button id="draw-1" class="w-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 1 (💎60)</button>
+                <button id="draw-10" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 10 (💎600)</button>
                 <div class="flex w-full space-x-2">
                     <button id="draw-fragment-1" class="w-1/2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x1 (✨100)</button>
-                    <button id="draw-fragment-10" class="w-1/2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x10 (✨1000)</button>
+                    <button id="draw-fragment-3" class="w-1/2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x3 (✨300)</button>
                 </div>
             </div>
         </div>
@@ -93,8 +93,8 @@
         const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.10, R: 0.50, N: 0.37 };
         const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
         const PITY_CONFIG = { SR: 10, SSR: 90 };
-        const DRAW_COST = { single: 40, multi: 400, fragmentSingle: 100, fragmentMulti: 1000 };
-        const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 200, UUR: 200 };
+        const DRAW_COST = { single: 60, multi: 600, fragmentSingle: 100, fragmentMulti: 300 };
+        const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
 
         // --- 狀態管理 ---
@@ -108,13 +108,16 @@
         let stardustStones = 5000;
         let fragments = 0;
         let isDrawingAnimation = false;
+        let animationFrameId = null;
+        let animationResolve = null;
+        let animationHighestRarity = null;
 
         // --- DOM 元素 ---
         const dom = {
             mainContainer: document.getElementById('main-container'),
             rarityFlashOverlay: document.getElementById('rarity-flash-overlay'),
             canvas: document.getElementById('divinationCanvas'), canvasContainer: document.getElementById('canvas-container'), canvasOverlay: document.getElementById('canvas-overlay'),
-            draw1Btn: document.getElementById('draw-1'), draw10Btn: document.getElementById('draw-10'), drawFragmentBtn1: document.getElementById('draw-fragment-1'), drawFragmentBtn10: document.getElementById('draw-fragment-10'),
+            draw1Btn: document.getElementById('draw-1'), draw10Btn: document.getElementById('draw-10'), drawFragmentBtn1: document.getElementById('draw-fragment-1'), drawFragmentBtn3: document.getElementById('draw-fragment-3'),
             resultsGrid: document.getElementById('results-grid'),
             srPityCounterEl: document.getElementById('sr-pity-counter'), ssrPityCounterEl: document.getElementById('ssr-pity-counter'),
             totalPullsCounterEl: document.getElementById('total-pulls-counter'),
@@ -124,6 +127,7 @@
             historyBtn: document.getElementById('history-btn'), historyModal: document.getElementById('history-modal'), closeHistoryModalBtn: document.getElementById('close-history-modal-btn'), historyModalBody: document.getElementById('history-modal-body'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'),
+            skipAnimationBtn: document.getElementById('skip-animation-btn'),
         };
         const ctx = dom.canvas.getContext('2d');
 
@@ -176,12 +180,51 @@
             gachaHistory.unshift({ date: new Date(), results });
             if (gachaHistory.length > 50) gachaHistory.pop();
             results.sort((a, b) => { const order = { UUR: 6, UR: 5, SSR: 4, SR: 3, R: 2, N: 1 }; return order[b.rarity] - order[a.rarity]; });
-            playConstellationAnimation(results[0].rarity).then(() => { displayResults(results); updateAllUI(); toggleButtons(true); isDrawingAnimation = false; });
+            
+            dom.skipAnimationBtn.classList.remove('hidden');
+            playConstellationAnimation(results[0].rarity).then(() => { 
+                displayResults(results); 
+                updateAllUI(); 
+                toggleButtons(true); 
+                isDrawingAnimation = false; 
+            });
         }
         
         // --- 動畫 ---
+        function endAnimation() {
+            if (!animationResolve) return;
+
+            if (constellationPoints.length > 0) {
+                const center = constellationPoints.reduce((acc, p) => ({x: acc.x + p.x, y: acc.y + p.y}), {x: 0, y: 0});
+                center.x /= constellationPoints.length; center.y /= constellationPoints.length;
+                let strokeStyle;
+                if (animationHighestRarity === 'UUR') { strokeStyle = `hsl(0, 100%, 70%)`; }
+                else if (animationHighestRarity === 'UR') { strokeStyle = `hsl(300, 100%, 70%)`; }
+                else if (animationHighestRarity === 'SSR') { strokeStyle = 'rgba(255, 69, 0, 0.9)'; }
+                else if (animationHighestRarity === 'SR') { strokeStyle = 'rgba(255, 215, 0, 0.9)'; }
+                else { strokeStyle = 'rgba(255, 255, 255, 0.7)'; }
+                createParticleBurst(center.x, center.y, strokeStyle, 100);
+                
+                if (particles.length > 0 && !animationFrameId) {
+                    function particleLoop() {
+                        if (particles.length === 0) return;
+                        drawStars(); handleParticles(); requestAnimationFrame(particleLoop);
+                    }
+                    particleLoop();
+                }
+            }
+            
+            constellationPoints = [];
+            dom.skipAnimationBtn.classList.add('hidden');
+            animationResolve();
+            animationResolve = null;
+            animationFrameId = null;
+        }
+
         function playConstellationAnimation(highestRarity) {
             return new Promise(resolve => {
+                animationResolve = resolve;
+                animationHighestRarity = highestRarity;
                 const rarityColors = { SSR: 'rgba(255, 69, 0, 0.9)', UR: 'rgba(218, 112, 214, 0.9)', UUR: 'linear-gradient(45deg, gold, deeppink, lightseagreen, gold)' };
                 if (highestRarity in rarityColors) {
                     dom.rarityFlashOverlay.style.background = rarityColors[highestRarity];
@@ -204,17 +247,12 @@
                     else { strokeStyle = 'rgba(255, 255, 255, 0.7)'; ctx.shadowColor = 'white'; ctx.lineWidth = 2; }
                     ctx.shadowBlur = glow; drawConstellation(strokeStyle); ctx.shadowBlur = 0;
                     if (progress >= 1) {
-                        if (constellationPoints.length > 0) {
-                            const center = constellationPoints.reduce((acc, p) => ({x: acc.x + p.x, y: acc.y + p.y}), {x: 0, y: 0});
-                            center.x /= constellationPoints.length; center.y /= constellationPoints.length;
-                            createParticleBurst(center.x, center.y, strokeStyle, 100);
-                            constellationPoints = [];
-                        }
-                        if (particles.length === 0) { drawStars(); resolve(); return; }
+                        endAnimation();
+                        return;
                     }
-                    requestAnimationFrame(animate);
+                    animationFrameId = requestAnimationFrame(animate);
                 }
-                requestAnimationFrame(animate);
+                animationFrameId = requestAnimationFrame(animate);
             });
         }
 
@@ -222,7 +260,7 @@
         function displayResults(results) { dom.resultsGrid.innerHTML = ''; results.forEach((char, index) => { const card = document.createElement('div'); card.className = `relative card-enter border-2 rounded-lg p-2 text-center bg-slate-900/70 rarity-${char.rarity.toLowerCase()}`; card.style.animationDelay = `${index * 50}ms`; card.innerHTML = `<p class="font-bold text-lg">${char.rarity}</p><p class="text-base">${char.name}</p>`; dom.resultsGrid.appendChild(card); if (char.isDuplicate) { setTimeout(() => { card.classList.add('grayscale'); const ownedText = document.createElement('div'); ownedText.className = 'absolute inset-0 flex items-center justify-center text-white font-bold text-2xl bg-black/50'; ownedText.textContent = '已有'; card.appendChild(ownedText); const toast = document.createElement('div'); toast.className = 'absolute -top-2 right-0 text-cyan-400 font-bold fragment-toast'; toast.textContent = `+${char.fragmentsGained} 碎片`; card.appendChild(toast); }, 1000); } }); }
         function updateHallOfLegends() { if (collectedURs.size === 0 && collectedUURs.size === 0) return; dom.hallOfLegendsContainer.classList.remove('hidden'); dom.hallOfLegendsGrid.innerHTML = ''; const sortedUURs = Array.from(collectedUURs).sort(); sortedUURs.forEach(id => { const data = CHARACTERS.UUR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-uur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-slate-900/50 via-purple-900/50 to-slate-900/50 col-span-1 sm:col-span-2 md:col-span-3'; card.innerHTML = `<p class="text-2xl font-bold text-rarity-uur">${data.name}</p><p class="text-lg text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); const sortedURs = Array.from(collectedURs).sort(); sortedURs.forEach(id => { const data = CHARACTERS.UR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-ur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-900/50 to-slate-900/50'; card.innerHTML = `<p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-white">${data.name}</p><p class="text-sm text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); }
         function updateCounters() { dom.srPityCounterEl.textContent = pityCounters.sr; dom.ssrPityCounterEl.textContent = pityCounters.ssr; dom.totalPullsCounterEl.textContent = totalPulls; dom.nCounterEl.textContent = rarityCounts.N; dom.rCounterEl.textContent = rarityCounts.R; dom.srCounterEl.textContent = rarityCounts.SR; dom.ssrStatCounterEl.textContent = rarityCounts.SSR; dom.urStatCounterEl.textContent = rarityCounts.UR; dom.uurStatCounterEl.textContent = rarityCounts.UUR; dom.stardustStonesCounter.textContent = stardustStones; dom.fragmentsCounter.textContent = fragments; }
-        function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn10.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
+        function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn3.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
         function updateAllUI() { updateCounters(); updateHallOfLegends(); toggleButtons(true); }
 
         // --- Modal 相關 ---
@@ -266,7 +304,7 @@
             dom.draw1Btn.addEventListener('click', () => { processDraw(1, 'main'); });
             dom.draw10Btn.addEventListener('click', () => { processDraw(10, 'main'); });
             dom.drawFragmentBtn1.addEventListener('click', () => { processDraw(1, 'fragment'); });
-            dom.drawFragmentBtn10.addEventListener('click', () => { processDraw(10, 'fragment'); });
+            dom.drawFragmentBtn3.addEventListener('click', () => { processDraw(3, 'fragment'); });
             dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); });
             
             dom.canvas.addEventListener('mousedown', (e) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x: e.offsetX, y: e.offsetY }]; dom.canvasOverlay.style.display = 'none'; });
@@ -278,6 +316,13 @@
             dom.closeInfoModalBtn.addEventListener('click', () => { dom.infoModal.classList.add('hidden'); });
             dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); });
             dom.closeHistoryModalBtn.addEventListener('click', () => { dom.historyModal.classList.add('hidden'); });
+            dom.skipAnimationBtn.addEventListener('click', () => {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                    endAnimation();
+                }
+            });
         }
 
         // --- 初始化 ---
