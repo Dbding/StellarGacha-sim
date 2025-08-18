@@ -65,7 +65,7 @@
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
             <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
         </div>
-        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳滑鼠，連結星辰...</p></div><button id="skip-animation-btn" class="absolute bottom-4 right-4 bg-white/20 text-white font-bold py-2 px-4 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-colors z-20 hidden">跳過</button></div>
+        <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg"><canvas id="divinationCanvas"></canvas><div id="canvas-overlay" class="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none"><p class="text-xl font-bold text-white/80 animate-pulse">請在此處拖曳，連結星辰...</p></div><button id="skip-animation-btn" class="absolute bottom-4 right-4 bg-white/20 text-white font-bold py-2 px-4 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-colors z-20 hidden">跳過</button></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-center">
             <div class="bg-slate-800/60 p-3 rounded-lg"><h3 class="font-bold text-purple-300">保底計數</h3><p>SR+: <span id="sr-pity-counter" class="font-bold text-yellow-400">0</span>/10</p><p>SSR+: <span id="ssr-pity-counter" class="font-bold text-orange-400">0</span>/90</p></div>
             <div class="bg-slate-800/60 p-3 rounded-lg flex flex-col justify-center"><h3 class="font-bold text-purple-300">稀有度統計</h3><div class="grid grid-cols-3 gap-1 text-sm mt-1"><p>N: <span id="n-counter" class="font-bold text-gray-400">0</span></p><p>R: <span id="r-counter" class="font-bold text-blue-400">0</span></p><p>SR: <span id="sr-counter" class="font-bold text-yellow-400">0</span></p><p>SSR: <span id="ssr-stat-counter" class="font-bold text-orange-400">0</span></p><p>UR: <span id="ur-stat-counter" class="font-bold text-violet-400">0</span></p><p>UUR: <span id="uur-stat-counter" class="font-bold text-rarity-uur">0</span></p></div></div>
@@ -307,9 +307,41 @@
             dom.drawFragmentBtn3.addEventListener('click', () => { processDraw(3, 'fragment'); });
             dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); });
             
+            // Mouse Events
             dom.canvas.addEventListener('mousedown', (e) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x: e.offsetX, y: e.offsetY }]; dom.canvasOverlay.style.display = 'none'; });
             dom.canvas.addEventListener('mousemove', (e) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x: e.offsetX, y: e.offsetY }); drawStars(); drawConstellation(); });
-            dom.canvas.addEventListener('mouseup', () => { isDrawing = false; }); dom.canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+            dom.canvas.addEventListener('mouseup', () => { isDrawing = false; });
+            dom.canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+            // Touch Events
+            dom.canvas.addEventListener('touchstart', (e) => {
+                if (isDrawingAnimation) return;
+                e.preventDefault();
+                const rect = dom.canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                isDrawing = true;
+                constellationPoints = [{ x, y }];
+                dom.canvasOverlay.style.display = 'none';
+            }, { passive: false });
+
+            dom.canvas.addEventListener('touchmove', (e) => {
+                if (!isDrawing || isDrawingAnimation) return;
+                e.preventDefault();
+                const rect = dom.canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                constellationPoints.push({ x, y });
+                drawStars();
+                drawConstellation();
+            }, { passive: false });
+
+            dom.canvas.addEventListener('touchend', () => { isDrawing = false; });
+            dom.canvas.addEventListener('touchcancel', () => { isDrawing = false; });
+
+
             window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
             
             dom.infoBtn.addEventListener('click', () => { dom.infoModal.classList.remove('hidden'); });
