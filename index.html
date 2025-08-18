@@ -56,11 +56,13 @@
         .pudding-mode #draw-1 { background-image: linear-gradient(to right, #FFB347, #FFCC33); }
         .pudding-mode #draw-10 { background-image: linear-gradient(to right, #FFA726, #FFB74D); }
         .pudding-mode #draw-fragment-1, .pudding-mode #draw-fragment-3 { background-image: linear-gradient(to right, #D1913C, #FFD194); }
-        .pudding-mode #claim-daily-btn { background-color: #A1887F; }
-        .pudding-mode #claim-daily-btn:hover { background-color: #8D6E63; }
+        .pudding-mode #claim-daily-btn, .pudding-mode #luck-btn, .pudding-mode #claim-fragment-btn { background-color: #A1887F; }
+        .pudding-mode #claim-daily-btn:hover, .pudding-mode #luck-btn:hover, .pudding-mode #claim-fragment-btn:hover { background-color: #8D6E63; }
         .pudding-mode #canvas-container { border-color: #A1887F; }
         .pudding-mode .card-on-canvas { background-color: #fffaf0; }
         .pudding-mode .text-white\/70, .pudding-mode .text-slate-400, .pudding-mode .text-slate-500 { color: #8D6E63; }
+        .pudding-mode #canvas-stats-top-left, .pudding-mode #canvas-stats-bottom-left, .pudding-mode #canvas-stats-top-right { color: #8D6E63; }
+        .pudding-mode #canvas-stats-top-left .text-purple-300, .pudding-mode #canvas-stats-bottom-left .text-purple-300, .pudding-mode #canvas-stats-top-right .text-purple-300 { color: #6D4C41; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
@@ -77,11 +79,12 @@
             <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
         </div>
         <header class="text-center mb-2 pt-8"><h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">星辰占卜池</h1><p class="text-slate-400 mt-1">描繪你的命運，召喚傳說中的英雄</p><p id="date-display" class="text-slate-500 text-sm mt-1"></p></header>
-        <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4">
+        <div class="flex flex-wrap items-center justify-center gap-y-2 gap-x-4 sm:gap-x-6 mb-4">
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-yellow-400 text-lg">💎</span><span id="stardust-stones-counter" class="text-lg sm:text-xl font-bold text-white">5000</span><span class="text-slate-300">星塵石</span></div>
             <div class="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full"><span class="text-cyan-400 text-lg">✨</span><span id="fragments-counter" class="text-lg sm:text-xl font-bold text-white">0</span><span class="text-slate-300">碎片</span></div>
             <button id="claim-daily-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-4 rounded-full transition-colors">每日領取</button>
             <button id="luck-btn" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-4 rounded-full transition-colors">結算本日運勢</button>
+            <button id="claim-fragment-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed">領取碎片 (60s)</button>
         </div>
         
         <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg">
@@ -115,8 +118,8 @@
         const DRAW_COST = { single: 60, multi: 600, fragmentSingle: 100, fragmentMulti: 300 };
         const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
-        const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的'];
-        const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '巨蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘'];
+        const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
+        const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '巨蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
 
         // --- 狀態管理 ---
         let pityCounters = { sr: 0, ssr: 0 };
@@ -133,6 +136,8 @@
         let animationResolve = null;
         let animationHighestRarity = null;
         let isPuddingModeActive = false;
+        let fragmentClaimTimer = 60;
+        let fragmentClaimIntervalId = null;
 
         // --- DOM 元素 ---
         const dom = {
@@ -148,6 +153,7 @@
             luckBtn: document.getElementById('luck-btn'), luckModal: document.getElementById('luck-modal'), closeLuckModalBtn: document.getElementById('close-luck-modal-btn'), luckModalBody: document.getElementById('luck-modal-body'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'),
+            claimFragmentBtn: document.getElementById('claim-fragment-btn'),
             skipAnimationBtn: document.getElementById('skip-animation-btn'),
             dateDisplay: document.getElementById('date-display'),
             canvasSrPity: document.getElementById('canvas-sr-pity'), canvasSsrPity: document.getElementById('canvas-ssr-pity'),
@@ -392,6 +398,15 @@
         // --- Modal & Features ---
         function setDate() { const today = new Date(); dom.dateDisplay.textContent = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; }
         function activatePuddingMode() { dom.body.classList.add('pudding-mode'); }
+        
+        function generateStarRating(rating) {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                stars += i < rating ? '★' : '☆';
+            }
+            return stars;
+        }
+
         function calculateAndShowLuck() {
             const today = new Date().toDateString();
             const todayPulls = gachaHistory.filter(entry => entry.date.toDateString() === today).flatMap(entry => entry.results);
@@ -408,7 +423,9 @@
             
             let highestRarity = 'N';
             const rarityOrder = ['N', 'R', 'SR', 'SSR', 'UR', 'UUR'];
+            const todayRarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
             todayPulls.forEach(pull => {
+                todayRarityCounts[pull.rarity]++;
                 if (rarityOrder.indexOf(pull.rarity) > rarityOrder.indexOf(highestRarity)) {
                     highestRarity = pull.rarity;
                 }
@@ -423,8 +440,26 @@
                 N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' }
             };
             
+            // Calculate star ratings
+            const loveRating = {UUR: 5, UR: 4, SSR: 3, SR: 2, R: 1, N: 1}[highestRarity];
+            const workScore = todayRarityCounts.SR * 1 + todayRarityCounts.SSR * 3 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
+            let workRating = 1;
+            if (workScore > 30) workRating = 5; else if (workScore > 15) workRating = 4; else if (workScore > 5) workRating = 3; else if (workScore > 0) workRating = 2;
+            const moneyScore = todayRarityCounts.SSR * 2 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
+            let moneyRating = 1;
+            if (moneyScore > 50) moneyRating = 5; else if (moneyScore > 25) moneyRating = 4; else if (moneyScore > 10) moneyRating = 3; else if (moneyScore > 0) moneyRating = 2;
+
             const luck = luckLevels[highestRarity];
-            dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><p class="mt-2 text-slate-300">${luck.text}</p>`;
+            dom.luckModalBody.innerHTML = `
+                <p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p>
+                <p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p>
+                <div class="text-left mt-4 space-y-1 text-yellow-300">
+                    <p>戀愛運：${generateStarRating(loveRating)}</p>
+                    <p>事業運：${generateStarRating(workRating)}</p>
+                    <p>金錢運：${generateStarRating(moneyRating)}</p>
+                </div>
+                <p class="mt-4 text-slate-300 text-left">${luck.text}</p>
+            `;
             dom.luckModal.classList.remove('hidden');
         }
         function populateInfoModal() {
@@ -438,7 +473,16 @@
             fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4';
             fragmentPoolTitle.textContent = '碎片召喚';
             dom.infoModalBody.appendChild(fragmentPoolTitle);
-            ['UUR', 'UR', 'SSR'].forEach(rarity => { const prob = PROBABILITIES_FRAGMENT[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
+            ['UUR', 'UR', 'SSR'].forEach(rarity => {
+                const prob = PROBABILITIES_FRAGMENT[rarity];
+                const characters = CHARACTERS[rarity];
+                const section = document.createElement('div');
+                section.className = 'pb-2';
+                const isUURCollected = collectedCharacters.has(CHARACTERS.UUR[0].id);
+                const names = (rarity === 'UUR' && !isUURCollected) ? '???' : ((rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'));
+                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
+                dom.infoModalBody.appendChild(section);
+            });
         }
         function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = entry.date.toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
         function populateCollectionModal() {
@@ -491,7 +535,7 @@
 
             window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
             
-            dom.infoBtn.addEventListener('click', () => { dom.infoModal.classList.remove('hidden'); });
+            dom.infoBtn.addEventListener('click', () => { populateInfoModal(); dom.infoModal.classList.remove('hidden'); });
             dom.closeInfoModalBtn.addEventListener('click', () => { dom.infoModal.classList.add('hidden'); });
             dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); });
             dom.closeHistoryModalBtn.addEventListener('click', () => { dom.historyModal.classList.add('hidden'); });
@@ -500,10 +544,40 @@
             dom.luckBtn.addEventListener('click', () => { calculateAndShowLuck(); });
             dom.closeLuckModalBtn.addEventListener('click', () => { dom.luckModal.classList.add('hidden'); });
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
+            
+            dom.claimFragmentBtn.addEventListener('click', () => {
+                fragments += 50;
+                updateAllUI();
+                startFragmentTimer();
+            });
+        }
+
+        function startFragmentTimer() {
+            dom.claimFragmentBtn.disabled = true;
+            fragmentClaimTimer = 60;
+            dom.claimFragmentBtn.textContent = `領取碎片 (${fragmentClaimTimer}s)`;
+            fragmentClaimIntervalId = setInterval(() => {
+                fragmentClaimTimer--;
+                dom.claimFragmentBtn.textContent = `領取碎片 (${fragmentClaimTimer}s)`;
+                if (fragmentClaimTimer <= 0) {
+                    clearInterval(fragmentClaimIntervalId);
+                    dom.claimFragmentBtn.disabled = false;
+                    dom.claimFragmentBtn.textContent = '領取 50 碎片';
+                }
+            }, 1000);
         }
 
         // --- 初始化 ---
-        function init() { resizeCanvas(); generateStars(100); drawStars(); updateAllUI(); populateInfoModal(); setupEventListeners(); setDate(); }
+        function init() { 
+            resizeCanvas(); 
+            generateStars(100); 
+            drawStars(); 
+            updateAllUI(); 
+            populateInfoModal(); 
+            setupEventListeners(); 
+            setDate(); 
+            startFragmentTimer();
+        }
         init();
     </script>
 </body>
