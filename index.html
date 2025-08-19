@@ -123,7 +123,7 @@
         const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.10, R: 0.50, N: 0.37 };
         const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
         const PITY_CONFIG = { SR: 10, SSR: 90 };
-        const DRAW_COST = { single: 80, multi: 800, fragmentSingle: 120, fragmentMulti: 360 }; // UPDATED
+        const DRAW_COST = { single: 80, multi: 800, fragmentSingle: 120, fragmentMulti: 360 };
         const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
         const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
@@ -342,7 +342,7 @@
             dom.stardustStonesCounter.textContent = stardustStones; dom.fragmentsCounter.textContent = fragments;
         }
         function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn3.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
-        function updateButtonCosts() { // NEW
+        function updateButtonCosts() {
             dom.draw1Btn.textContent = `召喚 x 1 (💎${DRAW_COST.single})`;
             dom.draw10Btn.textContent = `召喚 x 10 (💎${DRAW_COST.multi})`;
             dom.drawFragmentBtn1.textContent = `碎片x1 (✨${DRAW_COST.fragmentSingle})`;
@@ -435,6 +435,12 @@
             dom.achievementModalBody.innerHTML = '';
             Object.keys(achievements).forEach(key => {
                 const ach = achievements[key];
+
+                // Hide 'puddingTruth' achievement if it's still locked
+                if (key === 'puddingTruth' && ach.status === 'locked') {
+                    return; // Skip this iteration, making it a secret achievement
+                }
+
                 const achDiv = document.createElement('div');
                 achDiv.className = `flex items-center justify-between p-3 rounded-lg ${ach.status !== 'locked' ? 'bg-slate-700' : 'bg-slate-900/50'}`;
                 
@@ -523,14 +529,21 @@
         // --- 資料存檔 ---
         function getInitialAchievements() {
             return {
-                'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 100, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
-                'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 300, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
-                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 600, fragments: 50 }, status: 'locked', condition: () => totalPulls >= 100 }, // UPDATED
-                'total1000': { name: '千次觀星', description: '累計召喚1000次', reward: { stones: 6000, fragments: 500 }, status: 'locked', condition: () => totalPulls >= 1000 },
-                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 500, fragments: 50 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
-                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 1000, fragments: 100 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
-                'first5Star': { name: '星辰的寵兒', description: '首次將任意角色升至5星', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
-                'allN': { name: '樸實無華', description: '在10連召喚中全為N卡', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.every(r => r.rarity === 'N')) },
+                'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 50, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
+                'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 150, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
+                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 300, fragments: 50 }, status: 'locked', condition: () => totalPulls >= 100 },
+                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 250, fragments: 25 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
+                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 500, fragments: 50 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
+                'first5Star': { name: '星辰的寵兒', description: '首次將任意角色升至5星', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
+                'allN': { name: '樸實無華', description: '在10連召喚中6張以上為N卡', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'N').length >= 6) },
+                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 300, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'SSR' || r.rarity === 'UR' || r.rarity === 'UUR').length >= 2) },
+                'rMaster': { name: 'R級大師', description: '集齊所有R級角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => CHARACTERS.R.every(name => characterCollection[name]) },
+                'srMaster': { name: 'SR收藏家', description: '集齊所有SR級角色', reward: { stones: 200, fragments: 40 }, status: 'locked', condition: () => CHARACTERS.SR.every(name => characterCollection[name]) },
+                'ssrMaster': { name: 'SSR鑄造師', description: '集齊所有SSR級角色', reward: { stones: 400, fragments: 80 }, status: 'locked', condition: () => CHARACTERS.SSR.every(name => characterCollection[name]) },
+                'urMaster': { name: 'UR潛意識', description: '集齊所有UR級角色', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => CHARACTERS.UR.every(char => characterCollection[char.id]) },
+                'puddingTruth': { name: '布丁的真理', description: '召喚到傳說中的布丁', reward: { stones: 888, fragments: 88 }, status: 'locked', condition: () => rarityCounts.UUR > 0 },
+                'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星(5星)角色', reward: { stones: 800, fragments: 150 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 5).length >= 3 },
+                'fragmentHoarder': { name: '碎片富翁', description: '累計擁有超過1500碎片', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => fragments >= 1500 },
             };
         }
         function saveData() {
