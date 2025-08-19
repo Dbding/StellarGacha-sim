@@ -6,7 +6,7 @@
     <title>星辰占卜池 - 角色召喚</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; transition: background-color 0.5s ease; }
@@ -24,6 +24,7 @@
         @keyframes pulse-ur { 0% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; } 50% { transform: scale(1.02); box-shadow: 0 0 35px #ff00ff, 0 0 15px #ffffff inset; } 100% { transform: scale(1); box-shadow: 0 0 25px #da70d6, 0 0 10px #ff00ff inset; } }
         @keyframes pulse-uur { 0% { transform: scale(1.02); } 50% { transform: scale(1.05); } 100% { transform: scale(1.02); } }
         @keyframes text-rainbow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes star-glow { 0%, 100% { box-shadow: 0 0 15px 3px #fff, 0 0 25px 8px #ffd700, 0 0 35px 15px #ff8c00; opacity: 0.8; } 50% { box-shadow: 0 0 20px 5px #fff, 0 0 35px 12px #ffd700, 0 0 50px 20px #ff8c00; opacity: 1; } }
 
         #divinationCanvas { cursor: crosshair; background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); }
         
@@ -45,6 +46,9 @@
         
         .rarity-flash-overlay { animation: flash-effect 1.2s ease-out forwards; }
         @keyframes flash-effect { from { opacity: 0.7; } to { opacity: 0; } }
+
+        .star-5-glow { animation: star-glow 2.5s infinite; }
+        .star-rating { color: #ffd700; text-shadow: 0 0 3px #ffd700; }
 
         /* Pudding Theme */
         .pudding-mode { background-color: #FFD166; }
@@ -74,6 +78,7 @@
             <p class="text-lg sm:text-xl font-bold text-white/70 select-none">作者：盯布丁</p>
             <button id="collection-btn" class="text-slate-400 hover:text-white transition-colors" title="圖鑑"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg></button>
             <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
+            <button id="achievement-btn" class="relative text-slate-400 hover:text-white transition-colors" title="成就"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 7.152l-4.242.618c-1.634.238-2.29 2.242-1.088 3.422l3.07 2.99- .724 4.225c-.28 1.625 1.423 2.863 2.914 2.153L10 17.677l3.77 1.982c1.49.71 3.192-.528 2.912-2.153l-.724-4.225 3.07-2.99c1.202-1.18 1.546-3.184-1.088-3.422L12 7.152l-.51-4.002z" clip-rule="evenodd" /></svg><div id="achievement-red-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900 hidden"></div></button>
         </div>
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
             <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
@@ -97,15 +102,18 @@
         </div>
         
         <div class="my-4 space-y-3">
-            <div class="flex w-full space-x-3"><button id="draw-1" class="w-1/2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 1 (💎60)</button><button id="draw-10" class="w-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">召喚 x 10 (💎600)</button></div>
-            <div class="flex w-full space-x-3"><button id="draw-fragment-1" class="w-1/2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x1 (✨100)</button><button id="draw-fragment-3" class="w-1/2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed">碎片x3 (✨300)</button></div>
+            <div class="flex w-full space-x-3"><button id="draw-1" class="w-1/2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"></button><button id="draw-10" class="w-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"></button></div>
+            <div class="flex w-full space-x-3"><button id="draw-fragment-1" class="w-1/2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"></button><button id="draw-fragment-3" class="w-1/2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"></button></div>
         </div>
     </div>
     <div id="hall-of-legends-container" class="w-full max-w-4xl mx-auto mt-8 p-4 bg-slate-900/50 rounded-2xl border border-yellow-400/50 shadow-2xl hidden"><h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 mb-4">傳說殿堂</h2><div id="hall-of-legends-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div></div>
+    
+    <!-- Modals -->
     <div id="info-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-info-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚詳情</h2><div id="info-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="history-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-history-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚歷史</h2><div id="history-modal-body" class="space-y-2 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="collection-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-collection-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">角色圖鑑</h2><div id="collection-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="luck-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 text-center"><button id="close-luck-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">本日運勢</h2><div id="luck-modal-body" class="space-y-2"></div></div></div>
+    <div id="achievement-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-achievement-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">成就殿堂</h2><div id="achievement-modal-body" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
 
     <script>
         // --- 資料設定 ---
@@ -115,22 +123,14 @@
         const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.10, R: 0.50, N: 0.37 };
         const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
         const PITY_CONFIG = { SR: 10, SSR: 90 };
-        const DRAW_COST = { single: 60, multi: 600, fragmentSingle: 100, fragmentMulti: 300 };
+        const DRAW_COST = { single: 80, multi: 800, fragmentSingle: 120, fragmentMulti: 360 }; // UPDATED
         const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 50, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
         const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
         const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '巨蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
 
         // --- 狀態管理 ---
-        let pityCounters = { sr: 0, ssr: 0 };
-        let rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
-        let collectedCharacters = new Set();
-        let collectedURs = new Set();
-        let collectedUURs = new Set();
-        let gachaHistory = [];
-        let totalPulls = 0;
-        let stardustStones = 5000;
-        let fragments = 0;
+        let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements;
         let isDrawingAnimation = false;
         let animationFrameId = null;
         let animationResolve = null;
@@ -141,9 +141,7 @@
 
         // --- DOM 元素 ---
         const dom = {
-            body: document.body,
-            mainContainer: document.getElementById('main-container'),
-            rarityFlashOverlay: document.getElementById('rarity-flash-overlay'),
+            body: document.body, mainContainer: document.getElementById('main-container'), rarityFlashOverlay: document.getElementById('rarity-flash-overlay'),
             canvas: document.getElementById('divinationCanvas'), canvasContainer: document.getElementById('canvas-container'), canvasOverlay: document.getElementById('canvas-overlay'),
             draw1Btn: document.getElementById('draw-1'), draw10Btn: document.getElementById('draw-10'), drawFragmentBtn1: document.getElementById('draw-fragment-1'), drawFragmentBtn3: document.getElementById('draw-fragment-3'),
             hallOfLegendsContainer: document.getElementById('hall-of-legends-container'), hallOfLegendsGrid: document.getElementById('hall-of-legends-grid'),
@@ -151,11 +149,10 @@
             historyBtn: document.getElementById('history-btn'), historyModal: document.getElementById('history-modal'), closeHistoryModalBtn: document.getElementById('close-history-modal-btn'), historyModalBody: document.getElementById('history-modal-body'),
             collectionBtn: document.getElementById('collection-btn'), collectionModal: document.getElementById('collection-modal'), closeCollectionModalBtn: document.getElementById('close-collection-modal-btn'), collectionModalBody: document.getElementById('collection-modal-body'),
             luckBtn: document.getElementById('luck-btn'), luckModal: document.getElementById('luck-modal'), closeLuckModalBtn: document.getElementById('close-luck-modal-btn'), luckModalBody: document.getElementById('luck-modal-body'),
+            achievementBtn: document.getElementById('achievement-btn'), achievementModal: document.getElementById('achievement-modal'), closeAchievementModalBtn: document.getElementById('close-achievement-modal-btn'), achievementModalBody: document.getElementById('achievement-modal-body'), achievementRedDot: document.getElementById('achievement-red-dot'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
-            claimDailyBtn: document.getElementById('claim-daily-btn'),
-            claimFragmentBtn: document.getElementById('claim-fragment-btn'),
-            skipAnimationBtn: document.getElementById('skip-animation-btn'),
-            dateDisplay: document.getElementById('date-display'),
+            claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'),
+            skipAnimationBtn: document.getElementById('skip-animation-btn'), dateDisplay: document.getElementById('date-display'),
             canvasSrPity: document.getElementById('canvas-sr-pity'), canvasSsrPity: document.getElementById('canvas-ssr-pity'),
             canvasTotalPulls: document.getElementById('canvas-total-pulls'),
             canvasNStat: document.getElementById('canvas-n-stat'), canvasRStat: document.getElementById('canvas-r-stat'), canvasSrStat: document.getElementById('canvas-sr-stat'), canvasSsrStat: document.getElementById('canvas-ssr-stat'), canvasUrStat: document.getElementById('canvas-ur-stat'), canvasUurStat: document.getElementById('canvas-uur-stat'),
@@ -179,7 +176,7 @@
 
         // --- 抽卡核心邏輯 ---
         function getRarity(probSet, isSrPity = false, isSsrPity = false) { if (probSet === PROBABILITIES) { if (isSsrPity) return Math.random() < (probSet.UR / (probSet.UR + probSet.SSR)) ? 'UR' : 'SSR'; if (isSrPity) { const srPlusProb = probSet.SR + probSet.SSR + probSet.UR; const rand = Math.random(); if (rand < probSet.UR / srPlusProb) return 'UR'; if (rand < (probSet.UR + probSet.SSR) / srPlusProb) return 'SSR'; return 'SR'; } } const rand = Math.random(); let cumulative = 0; for (const rarity in probSet) { cumulative += probSet[rarity]; if (rand < cumulative) { return rarity; } } return 'SSR'; }
-        function drawOneCharacter(probSet, isSrPity = false, isSsrPity = false) { const rarity = getRarity(probSet, isSrPity, isSsrPity); let character; const charactersOfRarity = CHARACTERS[rarity]; if (rarity === 'UR' || rarity === 'UUR') { character = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; } else { const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; character = { name }; } if (probSet === PROBABILITIES) { if (rarity === 'UR' || rarity === 'SSR') { pityCounters.ssr = 0; pityCounters.sr = 0; } else if (rarity === 'SR') { pityCounters.sr = 0; } } return { ...character, rarity }; }
+        function drawOneCharacter(probSet, isSrPity = false, isSsrPity = false) { const rarity = getRarity(probSet, isSrPity, isSsrPity); let character; const charactersOfRarity = CHARACTERS[rarity]; if (rarity === 'UR' || rarity === 'UUR') { character = { ...charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)] }; } else { const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; character = { name }; } if (probSet === PROBABILITIES) { if (rarity === 'UR' || rarity === 'SSR') { pityCounters.ssr = 0; pityCounters.sr = 0; } else if (rarity === 'SR') { pityCounters.sr = 0; } } return { ...character, rarity }; }
         function processDraw(count, poolType) {
             if (isDrawingAnimation) return;
             const isFragmentPool = poolType === 'fragment';
@@ -199,24 +196,34 @@
                 if (!isFragmentPool) { totalPulls++; pityCounters.sr++; pityCounters.ssr++; }
                 const character = drawOneCharacter(isFragmentPool ? PROBABILITIES_FRAGMENT : PROBABILITIES, pityCounters.sr >= PITY_CONFIG.SR, pityCounters.ssr >= PITY_CONFIG.SSR);
                 const charIdentifier = character.id || character.name;
-                character.isDuplicate = collectedCharacters.has(charIdentifier);
+                
+                if (characterCollection[charIdentifier]) { // Duplicate
+                    character.isDuplicate = true;
+                    if (characterCollection[charIdentifier].stars < 5) {
+                        characterCollection[charIdentifier].stars++;
+                    }
+                    const fragmentsGained = FRAGMENT_REWARDS[character.rarity];
+                    fragments += fragmentsGained;
+                    character.fragmentsGained = fragmentsGained;
+                } else { // New character
+                    character.isDuplicate = false;
+                    characterCollection[charIdentifier] = { ...character, stars: 1 };
+                }
+                
                 results.push(character);
                 rarityCounts[character.rarity]++;
-                if (character.isDuplicate) { const fragmentsGained = FRAGMENT_REWARDS[character.rarity]; fragments += fragmentsGained; character.fragmentsGained = fragmentsGained; } 
-                else { collectedCharacters.add(charIdentifier); }
-                if (character.rarity === 'UR') { collectedURs.add(character.id); }
-                if (character.rarity === 'UUR') {
-                    collectedUURs.add(character.id);
-                    if (!isPuddingModeActive) {
-                        activatePuddingMode();
-                        isPuddingModeActive = true;
-                    }
+                if (character.rarity === 'UUR' && !isPuddingModeActive) {
+                    activatePuddingMode();
+                    isPuddingModeActive = true;
                 }
             }
-            gachaHistory.unshift({ date: new Date(), results });
+            gachaHistory.unshift({ date: new Date().toISOString(), results });
             if (gachaHistory.length > 50) gachaHistory.pop();
             results.sort((a, b) => { const order = { UUR: 6, UR: 5, SSR: 4, SR: 3, R: 2, N: 1 }; return order[b.rarity] - order[a.rarity]; });
             
+            checkAchievements();
+            saveData();
+
             dom.skipAnimationBtn.classList.remove('hidden');
             playConstellationAnimation(results[0].rarity).then(() => { 
                 displayResultsOnCanvas(results); 
@@ -226,7 +233,6 @@
         // --- 動畫 ---
         function endAnimation() {
             if (!animationResolve) return;
-
             if (constellationPoints.length > 0) {
                 const center = constellationPoints.reduce((acc, p) => ({x: acc.x + p.x, y: acc.y + p.y}), {x: 0, y: 0});
                 center.x /= constellationPoints.length; center.y /= constellationPoints.length;
@@ -246,7 +252,6 @@
                     particleLoop();
                 }
             }
-            
             constellationPoints = [];
             dom.skipAnimationBtn.classList.add('hidden');
             animationResolve();
@@ -264,7 +269,6 @@
                     dom.rarityFlashOverlay.classList.add('rarity-flash-overlay');
                     setTimeout(() => dom.rarityFlashOverlay.classList.remove('rarity-flash-overlay'), 1200);
                 }
-
                 if (highestRarity === 'UUR') { dom.mainContainer.classList.add('shake-animation-hard'); setTimeout(() => dom.mainContainer.classList.remove('shake-animation-hard'), 600); }
                 else if (highestRarity === 'SSR' || highestRarity === 'UR') { dom.mainContainer.classList.add('shake-animation'); setTimeout(() => dom.mainContainer.classList.remove('shake-animation'), 500); }
                 
@@ -279,10 +283,7 @@
                     else if (highestRarity === 'SR') { strokeStyle = 'rgba(255, 215, 0, 0.9)'; ctx.shadowColor = 'rgba(255, 215, 0, 1)'; ctx.lineWidth = 3; } 
                     else { strokeStyle = 'rgba(255, 255, 255, 0.7)'; ctx.shadowColor = 'white'; ctx.lineWidth = 2; }
                     ctx.shadowBlur = glow; drawConstellation(strokeStyle); ctx.shadowBlur = 0;
-                    if (progress >= 1) {
-                        endAnimation();
-                        return;
-                    }
+                    if (progress >= 1) { endAnimation(); return; }
                     animationFrameId = requestAnimationFrame(animate);
                 }
                 animationFrameId = requestAnimationFrame(animate);
@@ -291,73 +292,23 @@
 
         // --- UI 更新 ---
         function displayResultsOnCanvas(results) {
-            const container = dom.canvasContainer;
-            const containerWidth = container.clientWidth;
-            
-            const cardCount = results.length;
-            const maxCardsPerRow = cardCount <= 5 ? 5 : 5;
-            const gap = containerWidth * 0.02; // Responsive gap
-            
+            const container = dom.canvasContainer; const containerWidth = container.clientWidth;
+            const cardCount = results.length; const maxCardsPerRow = 5; const gap = containerWidth * 0.02;
             let cardWidth = (containerWidth - (gap * (maxCardsPerRow + 1))) / maxCardsPerRow;
-            if (cardCount < maxCardsPerRow && cardCount > 1) {
-                 cardWidth = (containerWidth - (gap * (cardCount + 1))) / cardCount;
-            }
-            if (cardWidth > 100) cardWidth = 100; // Max card width
+            if (cardCount < maxCardsPerRow && cardCount > 1) { cardWidth = (containerWidth - (gap * (cardCount + 1))) / cardCount; }
+            if (cardWidth > 100) cardWidth = 100;
             const cardHeight = cardWidth * 1.2;
 
             results.forEach((char, index) => {
                 const card = document.createElement('div');
                 card.className = `absolute card-on-canvas border-2 rounded-lg p-2 text-center bg-slate-900/70 rarity-${char.rarity.toLowerCase()}`;
-                card.style.width = `${cardWidth}px`;
-                card.style.height = `${cardHeight}px`;
-                card.style.animationDelay = `${index * 80}ms`;
-
+                card.style.width = `${cardWidth}px`; card.style.height = `${cardHeight}px`; card.style.animationDelay = `${index * 80}ms`;
                 let row, col;
-                if (cardCount <= maxCardsPerRow) { // Single row
-                    row = 0;
-                    col = index;
-                    const totalWidth = cardCount * cardWidth + (cardCount - 1) * gap;
-                    const startX = (containerWidth - totalWidth) / 2;
-                    card.style.left = `${startX + col * (cardWidth + gap)}px`;
-                    card.style.top = `${(container.clientHeight - cardHeight) / 2}px`;
-                } else { // Two rows
-                    const cardsInFirstRow = Math.ceil(cardCount / 2);
-                    const cardsInSecondRow = cardCount - cardsInFirstRow;
-                    
-                    if (index < cardsInFirstRow) { // First row
-                        row = 0;
-                        col = index;
-                        const totalWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * gap;
-                        const startX = (containerWidth - totalWidth) / 2;
-                        card.style.left = `${startX + col * (cardWidth + gap)}px`;
-                    } else { // Second row
-                        row = 1;
-                        col = index - cardsInFirstRow;
-                        const totalWidth = cardsInSecondRow * cardWidth + (cardsInSecondRow - 1) * gap;
-                        const startX = (containerWidth - totalWidth) / 2;
-                        card.style.left = `${startX + col * (cardWidth + gap)}px`;
-                    }
-                    const totalHeight = 2 * cardHeight + gap;
-                    const startY = (container.clientHeight - totalHeight) / 2;
-                    card.style.top = `${startY + row * (cardHeight + gap)}px`;
-                }
-                
+                if (cardCount <= maxCardsPerRow) { row = 0; col = index; const totalWidth = cardCount * cardWidth + (cardCount - 1) * gap; const startX = (containerWidth - totalWidth) / 2; card.style.left = `${startX + col * (cardWidth + gap)}px`; card.style.top = `${(container.clientHeight - cardHeight) / 2}px`;
+                } else { const cardsInFirstRow = 5; const cardsInSecondRow = 5; if (index < cardsInFirstRow) { row = 0; col = index; const totalWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * gap; const startX = (containerWidth - totalWidth) / 2; card.style.left = `${startX + col * (cardWidth + gap)}px`; } else { row = 1; col = index - cardsInFirstRow; const totalWidth = cardsInSecondRow * cardWidth + (cardsInSecondRow - 1) * gap; const startX = (containerWidth - totalWidth) / 2; card.style.left = `${startX + col * (cardWidth + gap)}px`; } const totalHeight = 2 * cardHeight + gap; const startY = (container.clientHeight - totalHeight) / 2; card.style.top = `${startY + row * (cardHeight + gap)}px`; }
                 card.innerHTML = `<p class="font-bold text-base">${char.rarity}</p><p class="text-sm">${char.name}</p>`;
                 container.appendChild(card); 
-
-                if (char.isDuplicate) { 
-                    setTimeout(() => { 
-                        card.classList.add('grayscale'); 
-                        const ownedText = document.createElement('div'); 
-                        ownedText.className = 'absolute inset-0 flex items-center justify-center text-white font-bold text-xl bg-black/50'; 
-                        ownedText.textContent = '已有'; 
-                        card.appendChild(ownedText); 
-                        const toast = document.createElement('div'); 
-                        toast.className = 'absolute -top-2 right-0 text-cyan-400 font-bold fragment-toast'; 
-                        toast.textContent = `+${char.fragmentsGained} 碎片`; 
-                        card.appendChild(toast); 
-                    }, 1000 + index * 80); 
-                }
+                if (char.isDuplicate) { setTimeout(() => { card.classList.add('grayscale'); const ownedText = document.createElement('div'); ownedText.className = 'absolute inset-0 flex items-center justify-center text-white font-bold text-xl bg-black/50'; ownedText.textContent = '升星'; card.appendChild(ownedText); const toast = document.createElement('div'); toast.className = 'absolute -top-2 right-0 text-cyan-400 font-bold fragment-toast'; toast.textContent = `+${char.fragmentsGained} 碎片`; card.appendChild(toast); }, 1000 + index * 80); }
             });
 
             const continuePrompt = document.createElement('div');
@@ -368,9 +319,7 @@
 
             function clearResults() {
                 container.removeEventListener('click', clearResults);
-                const cards = container.querySelectorAll('.card-on-canvas');
-                cards.forEach(c => c.remove());
-                continuePrompt.remove();
+                container.querySelectorAll('.card-on-canvas, #continue-prompt').forEach(el => el.remove());
                 updateAllUI();
                 toggleButtons(true);
                 isDrawingAnimation = false;
@@ -378,184 +327,188 @@
             container.addEventListener('click', clearResults);
         }
 
-        function updateHallOfLegends() { if (collectedURs.size === 0 && collectedUURs.size === 0) return; dom.hallOfLegendsContainer.classList.remove('hidden'); dom.hallOfLegendsGrid.innerHTML = ''; const sortedUURs = Array.from(collectedUURs).sort(); sortedUURs.forEach(id => { const data = CHARACTERS.UUR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-uur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-slate-900/50 via-purple-900/50 to-slate-900/50 col-span-1 sm:col-span-2 md:col-span-3'; card.innerHTML = `<p class="text-2xl font-bold text-rarity-uur">${data.name}</p><p class="text-lg text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); const sortedURs = Array.from(collectedURs).sort(); sortedURs.forEach(id => { const data = CHARACTERS.UR.find(c => c.id === id); if (!data) return; const card = document.createElement('div'); card.className = 'rarity-ur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-900/50 to-slate-900/50'; card.innerHTML = `<p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-white">${data.name}</p><p class="text-sm text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); }); }
+        function updateHallOfLegends() {
+            const collectedURs = Object.values(characterCollection).filter(c => c.rarity === 'UR');
+            const collectedUURs = Object.values(characterCollection).filter(c => c.rarity === 'UUR');
+            if (collectedURs.length === 0 && collectedUURs.length === 0) { dom.hallOfLegendsContainer.classList.add('hidden'); return; }
+            dom.hallOfLegendsContainer.classList.remove('hidden');
+            dom.hallOfLegendsGrid.innerHTML = '';
+            collectedUURs.forEach(data => { const card = document.createElement('div'); card.className = 'rarity-uur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-slate-900/50 via-purple-900/50 to-slate-900/50 col-span-1 sm:col-span-2 md:col-span-3'; card.innerHTML = `<p class="text-2xl font-bold text-rarity-uur">${data.name}</p><p class="text-lg text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); });
+            collectedURs.forEach(data => { const card = document.createElement('div'); card.className = 'rarity-ur p-4 rounded-lg flex flex-col items-center justify-center text-center bg-gradient-to-br from-purple-900/50 to-slate-900/50'; card.innerHTML = `<p class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-white">${data.name}</p><p class="text-sm text-yellow-300/80 mt-1">${data.title}</p>`; dom.hallOfLegendsGrid.appendChild(card); });
+        }
         function updateCounters() {
-            dom.canvasSrPity.textContent = pityCounters.sr;
-            dom.canvasSsrPity.textContent = pityCounters.ssr;
-            dom.canvasTotalPulls.textContent = totalPulls;
-            dom.canvasNStat.textContent = rarityCounts.N;
-            dom.canvasRStat.textContent = rarityCounts.R;
-            dom.canvasSrStat.textContent = rarityCounts.SR;
-            dom.canvasSsrStat.textContent = rarityCounts.SSR;
-            dom.canvasUrStat.textContent = rarityCounts.UR;
-            dom.canvasUurStat.textContent = rarityCounts.UUR;
-            dom.stardustStonesCounter.textContent = stardustStones;
-            dom.fragmentsCounter.textContent = fragments;
+            dom.canvasSrPity.textContent = pityCounters.sr; dom.canvasSsrPity.textContent = pityCounters.ssr; dom.canvasTotalPulls.textContent = totalPulls;
+            dom.canvasNStat.textContent = rarityCounts.N; dom.canvasRStat.textContent = rarityCounts.R; dom.canvasSrStat.textContent = rarityCounts.SR; dom.canvasSsrStat.textContent = rarityCounts.SSR; dom.canvasUrStat.textContent = rarityCounts.UR; dom.canvasUurStat.textContent = rarityCounts.UUR;
+            dom.stardustStonesCounter.textContent = stardustStones; dom.fragmentsCounter.textContent = fragments;
         }
         function toggleButtons(enabled) { dom.draw1Btn.disabled = !enabled || stardustStones < DRAW_COST.single; dom.draw10Btn.disabled = !enabled || stardustStones < DRAW_COST.multi; dom.drawFragmentBtn1.disabled = !enabled || fragments < DRAW_COST.fragmentSingle; dom.drawFragmentBtn3.disabled = !enabled || fragments < DRAW_COST.fragmentMulti; }
-        function updateAllUI() { updateCounters(); updateHallOfLegends(); toggleButtons(true); }
+        function updateButtonCosts() { // NEW
+            dom.draw1Btn.textContent = `召喚 x 1 (💎${DRAW_COST.single})`;
+            dom.draw10Btn.textContent = `召喚 x 10 (💎${DRAW_COST.multi})`;
+            dom.drawFragmentBtn1.textContent = `碎片x1 (✨${DRAW_COST.fragmentSingle})`;
+            dom.drawFragmentBtn3.textContent = `碎片x3 (✨${DRAW_COST.fragmentMulti})`;
+        }
+        function updateAllUI() { updateCounters(); updateHallOfLegends(); toggleButtons(true); updateAchievementNotification(); updateButtonCosts(); }
 
         // --- Modal & Features ---
         function setDate() { const today = new Date(); dom.dateDisplay.textContent = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; }
         function activatePuddingMode() { dom.body.classList.add('pudding-mode'); }
-        
-        function generateStarRating(rating) {
-            let stars = '';
-            for (let i = 0; i < 5; i++) {
-                stars += i < rating ? '★' : '☆';
-            }
-            return stars;
-        }
-
+        function generateStarRating(rating) { let stars = ''; for (let i = 0; i < 5; i++) { stars += i < rating ? '★' : '☆'; } return stars; }
         function calculateAndShowLuck() {
             const today = new Date().toDateString();
-            const todayPulls = gachaHistory.filter(entry => entry.date.toDateString() === today).flatMap(entry => entry.results);
-            
+            const todayPulls = gachaHistory.filter(entry => new Date(entry.date).toDateString() === today).flatMap(entry => entry.results);
             const adj = CONSTELLATION_ADJECTIVES[Math.floor(Math.random() * CONSTELLATION_ADJECTIVES.length)];
             const noun = CONSTELLATION_NOUNS[Math.floor(Math.random() * CONSTELLATION_NOUNS.length)];
             const constellationName = `${adj}${noun}座`;
-
-            if (todayPulls.length === 0) {
-                dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="mt-4 text-slate-400">尚未召喚，無法窺探今日的命運。快來描繪屬於你的星辰吧！</p>`;
-                dom.luckModal.classList.remove('hidden');
-                return;
-            }
-            
+            if (todayPulls.length === 0) { dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="mt-4 text-slate-400">尚未召喚，無法窺探今日的命運。快來描繪屬於你的星辰吧！</p>`; dom.luckModal.classList.remove('hidden'); return; }
             let highestRarity = 'N';
             const rarityOrder = ['N', 'R', 'SR', 'SSR', 'UR', 'UUR'];
             const todayRarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
-            todayPulls.forEach(pull => {
-                todayRarityCounts[pull.rarity]++;
-                if (rarityOrder.indexOf(pull.rarity) > rarityOrder.indexOf(highestRarity)) {
-                    highestRarity = pull.rarity;
-                }
-            });
-
-            const luckLevels = {
-                UUR: { title: '大吉', color: 'text-rarity-uur', text: '雖然是最好的運氣，但同時也被認為之後的運勢會呈下降趨勢。 所以有幸抽到「大吉」的話，要注意努力維持現狀哟。' },
-                UR: { title: '吉', color: 'text-rarity-ur', text: '僅次於「大吉」的第二好的運勢。 沒有大吉那樣的運勢急劇下降的可能性，一段時間內可以放心。' },
-                SSR: { title: '中吉', color: 'text-rarity-ssr', text: '運氣是「吉」的一半。 根據個人努力今後可能運氣會上升。' },
-                SR: { title: '小吉', color: 'text-rarity-sr', text: '「中吉」和「末吉」之間的運勢，說不上好但也不算差。 據說只會有小小的幸福，但不宜過度追求。' },
-                R: { title: '末吉', color: 'text-rarity-r', text: '排在「吉」最後的運勢，是「吉」之中最差的。 但是也意味著有許多上升空間，可以期待今後的變化。' },
-                N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' }
-            };
-            
-            // Calculate star ratings
+            todayPulls.forEach(pull => { todayRarityCounts[pull.rarity]++; if (rarityOrder.indexOf(pull.rarity) > rarityOrder.indexOf(highestRarity)) { highestRarity = pull.rarity; } });
+            const luckLevels = { UUR: { title: '大吉', color: 'text-rarity-uur', text: '雖然是最好的運氣，但同時也被認為之後的運勢會呈下降趨勢。 所以有幸抽到「大吉」的話，要注意努力維持現狀哟。' }, UR: { title: '吉', color: 'text-rarity-ur', text: '僅次於「大吉」的第二好的運勢。 沒有大吉那樣的運勢急劇下降的可能性，一段時間內可以放心。' }, SSR: { title: '中吉', color: 'text-rarity-ssr', text: '運氣是「吉」的一半。 根據個人努力今後可能運氣會上升。' }, SR: { title: '小吉', color: 'text-rarity-sr', text: '「中吉」和「末吉」之間的運勢，說不上好但也不算差。 據說只會有小小的幸福，但不宜過度追求。' }, R: { title: '末吉', color: 'text-rarity-r', text: '排在「吉」最後的運勢，是「吉」之中最差的。 但是也意味著有許多上升空間，可以期待今後的變化。' }, N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' } };
             const loveRating = {UUR: 5, UR: 4, SSR: 3, SR: 2, R: 1, N: 1}[highestRarity];
             const workScore = todayRarityCounts.SR * 1 + todayRarityCounts.SSR * 3 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
-            let workRating = 1;
-            if (workScore > 30) workRating = 5; else if (workScore > 15) workRating = 4; else if (workScore > 5) workRating = 3; else if (workScore > 0) workRating = 2;
+            let workRating = 1; if (workScore > 30) workRating = 5; else if (workScore > 15) workRating = 4; else if (workScore > 5) workRating = 3; else if (workScore > 0) workRating = 2;
             const moneyScore = todayRarityCounts.SSR * 2 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
-            let moneyRating = 1;
-            if (moneyScore > 50) moneyRating = 5; else if (moneyScore > 25) moneyRating = 4; else if (moneyScore > 10) moneyRating = 3; else if (moneyScore > 0) moneyRating = 2;
-
+            let moneyRating = 1; if (moneyScore > 50) moneyRating = 5; else if (moneyScore > 25) moneyRating = 4; else if (moneyScore > 10) moneyRating = 3; else if (moneyScore > 0) moneyRating = 2;
             const luck = luckLevels[highestRarity];
-            dom.luckModalBody.innerHTML = `
-                <p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p>
-                <p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p>
-                <div class="text-left mt-4 space-y-1 text-yellow-300">
-                    <p>戀愛運：${generateStarRating(loveRating)}</p>
-                    <p>事業運：${generateStarRating(workRating)}</p>
-                    <p>金錢運：${generateStarRating(moneyRating)}</p>
-                </div>
-                <p class="mt-4 text-slate-300 text-left">${luck.text}</p>
-            `;
+            dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><div class="text-left mt-4 space-y-1 text-yellow-300"><p>戀愛運：${generateStarRating(loveRating)}</p><p>事業運：${generateStarRating(workRating)}</p><p>金錢運：${generateStarRating(moneyRating)}</p></div><p class="mt-4 text-slate-300 text-left">${luck.text}</p>`;
             dom.luckModal.classList.remove('hidden');
         }
         function populateInfoModal() {
             dom.infoModalBody.innerHTML = '';
-            const mainPoolTitle = document.createElement('h4');
-            mainPoolTitle.className = 'text-lg font-bold text-yellow-300 border-b border-yellow-300/50 pb-1 mb-2';
-            mainPoolTitle.textContent = '星塵石召喚';
-            dom.infoModalBody.appendChild(mainPoolTitle);
+            const mainPoolTitle = document.createElement('h4'); mainPoolTitle.className = 'text-lg font-bold text-yellow-300 border-b border-yellow-300/50 pb-1 mb-2'; mainPoolTitle.textContent = '星塵石召喚'; dom.infoModalBody.appendChild(mainPoolTitle);
             ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => { const prob = PROBABILITIES[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
-            const fragmentPoolTitle = document.createElement('h4');
-            fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4';
-            fragmentPoolTitle.textContent = '碎片召喚';
-            dom.infoModalBody.appendChild(fragmentPoolTitle);
-            ['UUR', 'UR', 'SSR'].forEach(rarity => {
-                const prob = PROBABILITIES_FRAGMENT[rarity];
-                const characters = CHARACTERS[rarity];
-                const section = document.createElement('div');
-                section.className = 'pb-2';
-                const isUURCollected = collectedCharacters.has(CHARACTERS.UUR[0].id);
-                const names = (rarity === 'UUR' && !isUURCollected) ? '???' : ((rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'));
-                section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`;
-                dom.infoModalBody.appendChild(section);
-            });
+            const fragmentPoolTitle = document.createElement('h4'); fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4'; fragmentPoolTitle.textContent = '碎片召喚'; dom.infoModalBody.appendChild(fragmentPoolTitle);
+            ['UUR', 'UR', 'SSR'].forEach(rarity => { const prob = PROBABILITIES_FRAGMENT[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const isUURCollected = characterCollection[CHARACTERS.UUR[0].id]; const names = (rarity === 'UUR' && !isUURCollected) ? '???' : ((rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、')); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
         }
-        function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = entry.date.toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
+        function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = new Date(entry.date).toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
         function populateCollectionModal() {
             dom.collectionModalBody.innerHTML = '';
             ['UUR', 'UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => {
-                const characters = CHARACTERS[rarity];
-                if (!characters || characters.length === 0) return;
-                const section = document.createElement('div');
-                section.className = 'pb-2 border-b border-slate-700 last:border-b-0';
-                const title = document.createElement('h3');
-                title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`;
-                title.textContent = rarity;
-                section.appendChild(title);
-                const grid = document.createElement('div');
-                grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2';
+                const characters = CHARACTERS[rarity]; if (!characters || characters.length === 0) return;
+                const section = document.createElement('div'); section.className = 'pb-2 border-b border-slate-700 last:border-b-0';
+                const title = document.createElement('h3'); title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`; title.textContent = rarity; section.appendChild(title);
+                const grid = document.createElement('div'); grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2';
                 characters.forEach(char => {
-                    const charIdentifier = (typeof char === 'object') ? char.id : char;
-                    const isCollected = collectedCharacters.has(charIdentifier);
-                    const card = document.createElement('div');
-                    card.className = `p-2 rounded-lg text-center ${isCollected ? `rarity-${rarity.toLowerCase()} bg-slate-900/70` : 'bg-slate-700/50'}`;
-                    if (isCollected) { card.innerHTML = `<p class="font-bold">${char.name || char}</p>${char.title ? `<p class="text-xs text-yellow-300/80">${char.title}</p>` : ''}`; } 
-                    else { card.innerHTML = `<p class="font-bold text-slate-400">???</p>`; card.classList.add('grayscale'); }
+                    const charData = (typeof char === 'object') ? char : { name: char }; const charIdentifier = charData.id || charData.name;
+                    const collectedData = characterCollection[charIdentifier];
+                    const card = document.createElement('div'); card.className = `p-2 rounded-lg text-center transition-all duration-300 ${collectedData ? `rarity-${rarity.toLowerCase()} bg-slate-900/70` : 'bg-slate-700/50'}`;
+                    if (collectedData) {
+                        const stars = collectedData.stars;
+                        if (stars === 5) card.classList.add('star-5-glow');
+                        const starDisplay = `<div class="star-rating text-lg">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>`;
+                        card.innerHTML = `<p class="font-bold">${charData.name}</p>${charData.title ? `<p class="text-xs text-yellow-300/80">${charData.title}</p>` : ''}${starDisplay}`;
+                    } else { card.innerHTML = `<p class="font-bold text-slate-400">???</p>`; card.classList.add('grayscale'); }
                     grid.appendChild(card);
                 });
-                section.appendChild(grid);
-                dom.collectionModalBody.appendChild(section);
+                section.appendChild(grid); dom.collectionModalBody.appendChild(section);
+            });
+        }
+
+        // --- 成就系統 ---
+        function checkAchievements() {
+            Object.keys(achievements).forEach(key => {
+                const ach = achievements[key];
+                if (ach.status === 'locked' && ach.condition()) {
+                    ach.status = 'unlocked';
+                }
+            });
+            updateAchievementNotification();
+        }
+        function claimAchievement(key) {
+            const ach = achievements[key];
+            if (ach && ach.status === 'unlocked') {
+                stardustStones += ach.reward.stones || 0;
+                fragments += ach.reward.fragments || 0;
+                ach.status = 'claimed';
+                updateAllUI();
+                populateAchievementModal();
+                saveData();
+            }
+        }
+        function updateAchievementNotification() {
+            const hasUnlockable = Object.values(achievements).some(ach => ach.status === 'unlocked');
+            dom.achievementRedDot.classList.toggle('hidden', !hasUnlockable);
+        }
+        function populateAchievementModal() {
+            dom.achievementModalBody.innerHTML = '';
+            Object.keys(achievements).forEach(key => {
+                const ach = achievements[key];
+                const achDiv = document.createElement('div');
+                achDiv.className = `flex items-center justify-between p-3 rounded-lg ${ach.status !== 'locked' ? 'bg-slate-700' : 'bg-slate-900/50'}`;
+                
+                let rewardText = '';
+                if (ach.reward.stones > 0) rewardText += `💎 ${ach.reward.stones} `;
+                if (ach.reward.fragments > 0) rewardText += `✨ ${ach.reward.fragments}`;
+
+                achDiv.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-lg ${ach.status !== 'locked' ? 'text-yellow-300' : 'text-slate-300'}">${ach.name}</h4>
+                        <p class="text-sm text-slate-400">${ach.description}</p>
+                        <p class="text-sm font-bold text-cyan-300 mt-1">獎勵: ${rewardText}</p>
+                    </div>
+                `;
+                
+                const button = document.createElement('button');
+                button.className = 'font-bold py-2 px-5 rounded-lg transition-colors';
+                if (ach.status === 'unlocked') {
+                    button.textContent = '領取';
+                    button.className += ' bg-yellow-500 hover:bg-yellow-400 text-slate-900';
+                    button.onclick = () => claimAchievement(key);
+                } else if (ach.status === 'claimed') {
+                    button.textContent = '已領取';
+                    button.className += ' bg-gray-600 cursor-not-allowed';
+                    button.disabled = true;
+                } else { // locked
+                    button.textContent = '未達成';
+                    button.className += ' bg-gray-800 text-gray-500 cursor-not-allowed';
+                    button.disabled = true;
+                }
+                achDiv.appendChild(button);
+                dom.achievementModalBody.appendChild(achDiv);
             });
         }
         
         // --- 事件監聽 ---
         function setupEventListeners() {
-            dom.draw1Btn.addEventListener('click', () => { processDraw(1, 'main'); });
-            dom.draw10Btn.addEventListener('click', () => { processDraw(10, 'main'); });
-            dom.drawFragmentBtn1.addEventListener('click', () => { processDraw(1, 'fragment'); });
-            dom.drawFragmentBtn3.addEventListener('click', () => { processDraw(3, 'fragment'); });
-            dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); });
+            dom.draw1Btn.addEventListener('click', () => processDraw(1, 'main'));
+            dom.draw10Btn.addEventListener('click', () => processDraw(10, 'main'));
+            dom.drawFragmentBtn1.addEventListener('click', () => processDraw(1, 'fragment'));
+            dom.drawFragmentBtn3.addEventListener('click', () => processDraw(3, 'fragment'));
+            dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); saveData(); });
             
-            // Mouse & Touch Events
             const startDrawing = (x, y) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x, y }]; dom.canvasOverlay.style.display = 'none'; };
             const draw = (x, y) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x, y }); drawStars(); drawConstellation(); };
             const stopDrawing = () => { isDrawing = false; };
             dom.canvas.addEventListener('mousedown', (e) => startDrawing(e.offsetX, e.offsetY));
             dom.canvas.addEventListener('mousemove', (e) => draw(e.offsetX, e.offsetY));
-            dom.canvas.addEventListener('mouseup', stopDrawing);
-            dom.canvas.addEventListener('mouseleave', stopDrawing);
-            dom.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const rect = dom.canvas.getBoundingClientRect(); const touch = e.touches[0]; startDrawing(touch.clientX - rect.left, touch.clientY - rect.top); }, { passive: false });
-            dom.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const rect = dom.canvas.getBoundingClientRect(); const touch = e.touches[0]; draw(touch.clientX - rect.left, touch.clientY - rect.top); }, { passive: false });
-            dom.canvas.addEventListener('touchend', stopDrawing);
-            dom.canvas.addEventListener('touchcancel', stopDrawing);
+            dom.canvas.addEventListener('mouseup', stopDrawing); dom.canvas.addEventListener('mouseleave', stopDrawing);
+            dom.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const r = dom.canvas.getBoundingClientRect(); startDrawing(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top); }, { passive: false });
+            dom.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const r = dom.canvas.getBoundingClientRect(); draw(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top); }, { passive: false });
+            dom.canvas.addEventListener('touchend', stopDrawing); dom.canvas.addEventListener('touchcancel', stopDrawing);
 
             window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
             
             dom.infoBtn.addEventListener('click', () => { populateInfoModal(); dom.infoModal.classList.remove('hidden'); });
-            dom.closeInfoModalBtn.addEventListener('click', () => { dom.infoModal.classList.add('hidden'); });
+            dom.closeInfoModalBtn.addEventListener('click', () => dom.infoModal.classList.add('hidden'));
             dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); });
-            dom.closeHistoryModalBtn.addEventListener('click', () => { dom.historyModal.classList.add('hidden'); });
+            dom.closeHistoryModalBtn.addEventListener('click', () => dom.historyModal.classList.add('hidden'));
             dom.collectionBtn.addEventListener('click', () => { populateCollectionModal(); dom.collectionModal.classList.remove('hidden'); });
-            dom.closeCollectionModalBtn.addEventListener('click', () => { dom.collectionModal.classList.add('hidden'); });
-            dom.luckBtn.addEventListener('click', () => { calculateAndShowLuck(); });
-            dom.closeLuckModalBtn.addEventListener('click', () => { dom.luckModal.classList.add('hidden'); });
+            dom.closeCollectionModalBtn.addEventListener('click', () => dom.collectionModal.classList.add('hidden'));
+            dom.luckBtn.addEventListener('click', () => calculateAndShowLuck());
+            dom.closeLuckModalBtn.addEventListener('click', () => dom.luckModal.classList.add('hidden'));
+            dom.achievementBtn.addEventListener('click', () => { populateAchievementModal(); dom.achievementModal.classList.remove('hidden'); });
+            dom.closeAchievementModalBtn.addEventListener('click', () => dom.achievementModal.classList.add('hidden'));
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
-            
-            dom.claimFragmentBtn.addEventListener('click', () => {
-                fragments += 50;
-                updateAllUI();
-                startFragmentTimer();
-            });
+            dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; updateAllUI(); startFragmentTimer(); saveData(); });
         }
 
         function startFragmentTimer() {
             dom.claimFragmentBtn.disabled = true;
             fragmentClaimTimer = 60;
             dom.claimFragmentBtn.textContent = `領取碎片 (${fragmentClaimTimer}s)`;
+            if (fragmentClaimIntervalId) clearInterval(fragmentClaimIntervalId);
             fragmentClaimIntervalId = setInterval(() => {
                 fragmentClaimTimer--;
                 dom.claimFragmentBtn.textContent = `領取碎片 (${fragmentClaimTimer}s)`;
@@ -567,8 +520,55 @@
             }, 1000);
         }
 
+        // --- 資料存檔 ---
+        function getInitialAchievements() {
+            return {
+                'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 100, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
+                'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 300, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
+                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 600, fragments: 50 }, status: 'locked', condition: () => totalPulls >= 100 }, // UPDATED
+                'total1000': { name: '千次觀星', description: '累計召喚1000次', reward: { stones: 6000, fragments: 500 }, status: 'locked', condition: () => totalPulls >= 1000 },
+                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 500, fragments: 50 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
+                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 1000, fragments: 100 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
+                'first5Star': { name: '星辰的寵兒', description: '首次將任意角色升至5星', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
+                'allN': { name: '樸實無華', description: '在10連召喚中全為N卡', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.every(r => r.rarity === 'N')) },
+            };
+        }
+        function saveData() {
+            const gameState = { pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, lastDailyClaim: new Date().toDateString() };
+            localStorage.setItem('gachaSimSaveData', JSON.stringify(gameState));
+        }
+        function loadData() {
+            const savedData = localStorage.getItem('gachaSimSaveData');
+            if (savedData) {
+                const gameState = JSON.parse(savedData);
+                pityCounters = gameState.pityCounters;
+                rarityCounts = gameState.rarityCounts;
+                characterCollection = gameState.characterCollection;
+                gachaHistory = gameState.gachaHistory;
+                totalPulls = gameState.totalPulls;
+                stardustStones = gameState.stardustStones;
+                fragments = gameState.fragments;
+                achievements = { ...getInitialAchievements(), ...gameState.achievements }; // 合併以加入新成就
+                if(gameState.lastDailyClaim === new Date().toDateString()) {
+                    dom.claimDailyBtn.disabled = true;
+                    dom.claimDailyBtn.textContent = '已領取';
+                }
+            } else {
+                // 初始化新遊戲
+                pityCounters = { sr: 0, ssr: 0 };
+                rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
+                characterCollection = {};
+                gachaHistory = [];
+                totalPulls = 0;
+                stardustStones = 5000;
+                fragments = 0;
+                achievements = getInitialAchievements();
+            }
+        }
+
         // --- 初始化 ---
         function init() { 
+            loadData();
             resizeCanvas(); 
             generateStars(100); 
             drawStars(); 
@@ -577,6 +577,7 @@
             setupEventListeners(); 
             setDate(); 
             startFragmentTimer();
+            checkAchievements();
         }
         init();
     </script>
