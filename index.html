@@ -120,23 +120,24 @@
         const CHARACTERS = {
             N: ['史萊姆', '哥布林', '小妖精', '野狼', '巨大蝙蝠'], R: ['見習騎士', '魔法學徒', '精靈射手', '獸人戰士', '矮人礦工'], SR: ['皇家騎士團長', '大魔導師', '月光祭司', '暗影刺客', '獅鷲騎士'], SSR: ['炎龍騎士', '深淵魔王', '聖光女神', '時空大法師', '風暴射手'], UR: [{ id: 1, name: '創世之神．伊莉苟絲', title: '萬物之始' }, { id: 2, name: '滅世魔龍．巴哈姆特', title: '終焉之息' }, { id: 3, name: '星際旅人．凱恩', title: '時空漫遊者' }], UUR: [{ id: 101, name: '布丁', title: '萬物的真理' }]
         };
-        const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.12, R: 0.49, N: 0.36 }; // UPDATED
+        const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.12, R: 0.49, N: 0.36 };
         const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
         const PITY_CONFIG = { SR: 10, SSR: 90 };
         const DRAW_COST = { single: 80, multi: 800, fragmentSingle: 120, fragmentMulti: 360 };
-        const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 60, UR: 150, UUR: 200 }; // UPDATED
+        const FRAGMENT_REWARDS = { N: 1, R: 5, SR: 20, SSR: 60, UR: 150, UUR: 200 };
         const DAILY_REWARD = 1600;
         const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
-        const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '大蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
+        const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '狂蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
 
         // --- 狀態管理 ---
         let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements;
+        let luckCalculations, fragmentClaims, historyViews, ssrPityTriggered;
         let isDrawingAnimation = false;
         let animationFrameId = null;
         let animationResolve = null;
         let animationHighestRarity = null;
         let isPuddingModeActive = false;
-        let fragmentClaimTimer = 30; // UPDATED
+        let fragmentClaimTimer = 30;
         let fragmentClaimIntervalId = null;
 
         // --- DOM 元素 ---
@@ -193,7 +194,14 @@
 
             const results = [];
             for (let i = 0; i < count; i++) {
-                if (!isFragmentPool) { totalPulls++; pityCounters.sr++; pityCounters.ssr++; }
+                if (!isFragmentPool) { 
+                    totalPulls++; 
+                    pityCounters.sr++; 
+                    pityCounters.ssr++; 
+                    if (pityCounters.ssr >= PITY_CONFIG.SSR) {
+                        ssrPityTriggered = true;
+                    }
+                }
                 const character = drawOneCharacter(isFragmentPool ? PROBABILITIES_FRAGMENT : PROBABILITIES, pityCounters.sr >= PITY_CONFIG.SR, pityCounters.ssr >= PITY_CONFIG.SSR);
                 const charIdentifier = character.id || character.name;
                 
@@ -484,21 +492,21 @@
             
             dom.infoBtn.addEventListener('click', () => { populateInfoModal(); dom.infoModal.classList.remove('hidden'); });
             dom.closeInfoModalBtn.addEventListener('click', () => dom.infoModal.classList.add('hidden'));
-            dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); });
+            dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); historyViews++; checkAchievements(); saveData(); });
             dom.closeHistoryModalBtn.addEventListener('click', () => dom.historyModal.classList.add('hidden'));
             dom.collectionBtn.addEventListener('click', () => { populateCollectionModal(); dom.collectionModal.classList.remove('hidden'); });
             dom.closeCollectionModalBtn.addEventListener('click', () => dom.collectionModal.classList.add('hidden'));
-            dom.luckBtn.addEventListener('click', () => calculateAndShowLuck());
+            dom.luckBtn.addEventListener('click', () => { calculateAndShowLuck(); luckCalculations++; checkAchievements(); saveData(); });
             dom.closeLuckModalBtn.addEventListener('click', () => dom.luckModal.classList.add('hidden'));
             dom.achievementBtn.addEventListener('click', () => { populateAchievementModal(); dom.achievementModal.classList.remove('hidden'); });
             dom.closeAchievementModalBtn.addEventListener('click', () => dom.achievementModal.classList.add('hidden'));
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
-            dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; updateAllUI(); startFragmentTimer(); saveData(); });
+            dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; fragmentClaims++; updateAllUI(); startFragmentTimer(); checkAchievements(); saveData(); });
         }
 
         function startFragmentTimer() {
             dom.claimFragmentBtn.disabled = true;
-            fragmentClaimTimer = 30; // UPDATED
+            fragmentClaimTimer = 30;
             dom.claimFragmentBtn.textContent = `領取碎片 (${fragmentClaimTimer}s)`;
             if (fragmentClaimIntervalId) clearInterval(fragmentClaimIntervalId);
             fragmentClaimIntervalId = setInterval(() => {
@@ -515,26 +523,38 @@
         // --- 資料存檔 ---
         function getInitialAchievements() {
             return {
-                'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 50, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
-                'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 150, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
-                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 300, fragments: 50 }, status: 'locked', condition: () => totalPulls >= 100 },
-                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 250, fragments: 25 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
-                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 500, fragments: 50 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
-                'first5Star': { name: '星辰的寵兒', description: '首次將任意角色升至5星', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
-                'allN': { name: '樸實無華', description: '在10連召喚中5張以上為N卡', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'N').length >= 5) }, // UPDATED
-                'allR': { name: '小試身手', description: '在10連召喚中5張以上為R卡', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'R').length >= 5) }, // NEW
-                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 300, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'SSR' || r.rarity === 'UR' || r.rarity === 'UUR').length >= 2) },
-                'rMaster': { name: 'R級大師', description: '集齊所有R級角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => CHARACTERS.R.every(name => characterCollection[name]) },
-                'srMaster': { name: 'SR收藏家', description: '集齊所有SR級角色', reward: { stones: 200, fragments: 40 }, status: 'locked', condition: () => CHARACTERS.SR.every(name => characterCollection[name]) },
-                'ssrMaster': { name: 'SSR鑄造師', description: '集齊所有SSR級角色', reward: { stones: 400, fragments: 80 }, status: 'locked', condition: () => CHARACTERS.SSR.every(name => characterCollection[name]) },
-                'urMaster': { name: 'UR潛意識', description: '集齊所有UR級角色', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => CHARACTERS.UR.every(char => characterCollection[char.id]) },
+                'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 40, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
+                'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 120, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
+                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 240, fragments: 40 }, status: 'locked', condition: () => totalPulls >= 100 },
+                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 200, fragments: 20 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
+                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 400, fragments: 40 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
+                'twoStar': { name: '星光乍現', description: '首次將任意角色升至2星', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 2) },
+                'fourStar': { name: '星辰之力', description: '首次將任意角色升至4星', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 4) },
+                'first5Star': { name: '登峰造極', description: '首次將任意角色升至5星', reward: { stones: 400, fragments: 80 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
+                'allN': { name: 'NNNNN?', description: '在10連召喚中5張以上為N卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'N').length >= 5) },
+                'allR': { name: 'RRRRR!', description: '在10連召喚中5張以上為R卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'R').length >= 5) },
+                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 250, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'SSR' || r.rarity === 'UR' || r.rarity === 'UUR').length >= 2) },
+                'rMaster': { name: 'R級大師', description: '集齊所有R級角色', reward: { stones: 80, fragments: 15 }, status: 'locked', condition: () => CHARACTERS.R.every(name => characterCollection[name]) },
+                'srMaster': { name: 'SR收藏家', description: '集齊所有SR級角色', reward: { stones: 160, fragments: 30 }, status: 'locked', condition: () => CHARACTERS.SR.every(name => characterCollection[name]) },
+                'fiveStarSR': { name: '精英的極致', description: '擁有一名滿星(5星)的SR角色', reward: { stones: 300, fragments: 60 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SR' && c.stars >= 5) },
+                'ssrMaster': { name: 'SSR鑄造師', description: '集齊所有SSR級角色', reward: { stones: 320, fragments: 60 }, status: 'locked', condition: () => CHARACTERS.SSR.every(name => characterCollection[name]) },
+                'fiveStarSSR': { name: '傳說的巔峰', description: '擁有一名滿星(5星)的SSR角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SSR' && c.stars >= 5) },
+                'urMaster': { name: 'UR潛意識', description: '集齊所有UR級角色', reward: { stones: 800, fragments: 160 }, status: 'locked', condition: () => CHARACTERS.UR.every(char => characterCollection[char.id]) },
                 'puddingTruth': { name: '布丁的真理', description: '召喚到傳說中的布丁', reward: { stones: 888, fragments: 88 }, status: 'locked', condition: () => rarityCounts.UUR > 0 },
-                'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星(5星)角色', reward: { stones: 800, fragments: 150 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 5).length >= 3 },
-                'fragmentHoarder': { name: '碎片富翁', description: '累計擁有超過1000碎片', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => fragments >= 1000 }, // UPDATED
+                'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星(5星)角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 5).length >= 3 },
+                'fragmentHoarder': { name: '碎片富翁', description: '累計擁有超過1000碎片', reward: { stones: 150, fragments: 80 }, status: 'locked', condition: () => fragments >= 1000 },
+                'singlePullLuck': { name: '一發入魂', description: '在「召喚x1」中直接獲得SSR或UR角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length === 1 && (h.results[0].rarity === 'SSR' || h.results[0].rarity === 'UR')) },
+                'pityEnjoyer': { name: '保底的溫暖', description: '首次觸發SSR保底機制', reward: { stones: 80, fragments: 0 }, status: 'locked', condition: () => ssrPityTriggered },
+                'godAndDemon': { name: '神魔之巔', description: '同時擁有創世之神與滅世魔龍', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => characterCollection[1] && characterCollection[2] },
+                'knightsVow': { name: '騎士的誓言', description: '集齊所有「騎士」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => characterCollection['見習騎士'] && characterCollection['皇家騎士團長'] && characterCollection['炎龍騎士'] },
+                'magicMystery': { name: '魔法的奧秘', description: '集齊所有「法師」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => characterCollection['魔法學徒'] && characterCollection['大魔導師'] && characterCollection['時空大法師'] },
+                'fortuneTeller': { name: '運勢占卜師', description: '累計使用「結算本日運勢」功能5次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => luckCalculations >= 5 },
+                'diligentCollector': { name: '勤能補拙', description: '累計領取免費碎片3次', reward: { stones: 100, fragments: 50 }, status: 'locked', condition: () => fragmentClaims >= 3 },
+                'historian': { name: '歷史學家', description: '累計查看召喚歷史3次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => historyViews >= 3 },
             };
         }
         function saveData() {
-            const gameState = { pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, lastDailyClaim: new Date().toDateString() };
+            const gameState = { pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, ssrPityTriggered };
             localStorage.setItem('gachaSimSaveData', JSON.stringify(gameState));
         }
         function loadData() {
@@ -549,6 +569,10 @@
                 stardustStones = gameState.stardustStones;
                 fragments = gameState.fragments;
                 achievements = { ...getInitialAchievements(), ...gameState.achievements };
+                luckCalculations = gameState.luckCalculations || 0;
+                fragmentClaims = gameState.fragmentClaims || 0;
+                historyViews = gameState.historyViews || 0;
+                ssrPityTriggered = gameState.ssrPityTriggered || false;
                 if(gameState.lastDailyClaim === new Date().toDateString()) {
                     dom.claimDailyBtn.disabled = true;
                     dom.claimDailyBtn.textContent = '已領取';
@@ -561,6 +585,10 @@
                 totalPulls = 0;
                 stardustStones = 5000;
                 fragments = 0;
+                luckCalculations = 0;
+                fragmentClaims = 0;
+                historyViews = 0;
+                ssrPityTriggered = false;
                 achievements = getInitialAchievements();
             }
         }
