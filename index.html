@@ -79,6 +79,7 @@
             <button id="collection-btn" class="text-slate-400 hover:text-white transition-colors" title="圖鑑"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg></button>
             <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
             <button id="achievement-btn" class="relative text-slate-400 hover:text-white transition-colors" title="成就"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 7.152l-4.242.618c-1.634.238-2.29 2.242-1.088 3.422l3.07 2.99- .724 4.225c-.28 1.625 1.423 2.863 2.914 2.153L10 17.677l3.77 1.982c1.49.71 3.192-.528 2.912-2.153l-.724-4.225 3.07-2.99c1.202-1.18 1.546-3.184-1.088-3.422L12 7.152l-.51-4.002z" clip-rule="evenodd" /></svg><div id="achievement-red-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900 hidden"></div></button>
+            <button id="reset-btn" class="text-slate-400 hover:text-white transition-colors" title="重置遊戲"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 110 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg></button>
         </div>
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
             <button id="info-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚詳情"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
@@ -114,6 +115,7 @@
     <div id="collection-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-collection-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">角色圖鑑</h2><div id="collection-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="luck-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 text-center"><button id="close-luck-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">本日運勢</h2><div id="luck-modal-body" class="space-y-2"></div></div></div>
     <div id="achievement-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-achievement-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">成就殿堂</h2><div id="achievement-modal-body" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
+    <div id="reset-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-red-500 text-center"><h2 class="text-2xl font-bold text-center mb-4 text-red-400">重置遊戲</h2><p class="text-slate-300 mb-6">您確定要重置所有遊戲進度嗎？<br>這個操作無法復原！</p><div class="flex justify-center space-x-4"><button id="cancel-reset-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">取消</button><button id="confirm-reset-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">確定重置</button></div></div></div>
 
     <script>
         // --- 資料設定 ---
@@ -151,6 +153,7 @@
             collectionBtn: document.getElementById('collection-btn'), collectionModal: document.getElementById('collection-modal'), closeCollectionModalBtn: document.getElementById('close-collection-modal-btn'), collectionModalBody: document.getElementById('collection-modal-body'),
             luckBtn: document.getElementById('luck-btn'), luckModal: document.getElementById('luck-modal'), closeLuckModalBtn: document.getElementById('close-luck-modal-btn'), luckModalBody: document.getElementById('luck-modal-body'),
             achievementBtn: document.getElementById('achievement-btn'), achievementModal: document.getElementById('achievement-modal'), closeAchievementModalBtn: document.getElementById('close-achievement-modal-btn'), achievementModalBody: document.getElementById('achievement-modal-body'), achievementRedDot: document.getElementById('achievement-red-dot'),
+            resetBtn: document.getElementById('reset-btn'), resetModal: document.getElementById('reset-modal'), confirmResetBtn: document.getElementById('confirm-reset-btn'), cancelResetBtn: document.getElementById('cancel-reset-btn'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'),
             skipAnimationBtn: document.getElementById('skip-animation-btn'), dateDisplay: document.getElementById('date-display'),
@@ -477,6 +480,9 @@
             dom.drawFragmentBtn1.addEventListener('click', () => processDraw(1, 'fragment'));
             dom.drawFragmentBtn3.addEventListener('click', () => processDraw(3, 'fragment'));
             dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; updateAllUI(); saveData(); });
+            dom.resetBtn.addEventListener('click', () => dom.resetModal.classList.remove('hidden'));
+            dom.confirmResetBtn.addEventListener('click', () => { dom.resetModal.classList.add('hidden'); resetGame(); });
+            dom.cancelResetBtn.addEventListener('click', () => dom.resetModal.classList.add('hidden'));
             
             const startDrawing = (x, y) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x, y }]; dom.canvasOverlay.style.display = 'none'; };
             const draw = (x, y) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x, y }); drawStars(); drawConstellation(); };
@@ -520,7 +526,7 @@
             }, 1000);
         }
 
-        // --- 資料存檔 ---
+        // --- 資料存檔與重置 ---
         function getInitialAchievements() {
             return {
                 'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 40, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
@@ -553,6 +559,35 @@
                 'historian': { name: '歷史學家', description: '累計查看召喚歷史3次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => historyViews >= 3 },
             };
         }
+        
+        function initializeNewGame() {
+            pityCounters = { sr: 0, ssr: 0 };
+            rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
+            characterCollection = {};
+            gachaHistory = [];
+            totalPulls = 0;
+            stardustStones = 5000;
+            fragments = 0;
+            luckCalculations = 0;
+            fragmentClaims = 0;
+            historyViews = 0;
+            ssrPityTriggered = false;
+            achievements = getInitialAchievements();
+        }
+
+        function resetGame() {
+            localStorage.removeItem('gachaSimSaveData');
+            initializeNewGame();
+            dom.claimDailyBtn.disabled = false;
+            dom.claimDailyBtn.textContent = '每日領取';
+            dom.canvasContainer.querySelectorAll('.card-on-canvas, #continue-prompt').forEach(el => el.remove());
+            dom.canvasOverlay.style.display = 'flex';
+            isDrawingAnimation = false;
+            if (fragmentClaimIntervalId) clearInterval(fragmentClaimIntervalId);
+            startFragmentTimer();
+            updateAllUI();
+        }
+
         function saveData() {
             const gameState = { pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, ssrPityTriggered };
             localStorage.setItem('gachaSimSaveData', JSON.stringify(gameState));
@@ -578,18 +613,7 @@
                     dom.claimDailyBtn.textContent = '已領取';
                 }
             } else {
-                pityCounters = { sr: 0, ssr: 0 };
-                rarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
-                characterCollection = {};
-                gachaHistory = [];
-                totalPulls = 0;
-                stardustStones = 5000;
-                fragments = 0;
-                luckCalculations = 0;
-                fragmentClaims = 0;
-                historyViews = 0;
-                ssrPityTriggered = false;
-                achievements = getInitialAchievements();
+                initializeNewGame();
             }
         }
 
