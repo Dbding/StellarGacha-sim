@@ -2,14 +2,14 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>星辰占卜池 - 角色召喚</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; transition: background-color 0.5s ease; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0c0a1e; color: #e0e0e0; overflow: hidden; transition: background-color 0.5s ease; -webkit-tap-highlight-color: transparent; }
         .rarity-n { border-color: #a0a0a0; box-shadow: 0 0 5px #a0a0a0; }
         .rarity-r { border-color: #6495ed; box-shadow: 0 0 8px #6495ed; }
         .rarity-sr { border-color: #ffd700; box-shadow: 0 0 12px #ffd700; }
@@ -47,7 +47,7 @@
         .rarity-flash-overlay { animation: flash-effect 1.2s ease-out forwards; }
         @keyframes flash-effect { from { opacity: 0.7; } to { opacity: 0; } }
 
-        .star-5-glow { animation: star-glow 2.5s infinite; }
+        .star-max-glow { animation: star-glow 2.5s infinite; }
         .star-rating { color: #ffd700; text-shadow: 0 0 3px #ffd700; }
         
         .toast-notification { animation: fade-in-out 2s ease-in-out forwards; }
@@ -57,6 +57,14 @@
             90% { opacity: 1; transform: translateY(0) translateX(-50%); }
             100% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
         }
+
+        .rapid-tap-zone { transition: background-color 0.2s; }
+        .rapid-tap-zone:active { background-color: rgba(255, 255, 0, 0.2); }
+        
+        /* Hide scrollbar for achievement tabs */
+        #achievement-tabs::-webkit-scrollbar { display: none; }
+        #achievement-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+
 
         /* Pudding Theme */
         .pudding-mode { background-color: #FFD166; }
@@ -103,7 +111,11 @@
             <button id="claim-daily-btn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">每日領取</button>
             <button id="luck-btn" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">結算本日運勢</button>
             <button id="claim-fragment-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">領取碎片 (30s)</button>
-            <button id="rapid-click-btn" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">星辰爆發 (0/10)</button>
+            <div id="rapid-click-container" class="relative w-full h-full bg-yellow-600/20 rounded-lg flex items-center justify-center text-yellow-300 font-bold overflow-hidden select-none">
+                <div id="rapid-tap-left-btn" class="absolute left-0 top-0 w-1/2 h-full rapid-tap-zone"></div>
+                <div id="rapid-tap-right-btn" class="absolute right-0 top-0 w-1/2 h-full rapid-tap-zone border-l border-yellow-500/30"></div>
+                <span id="rapid-click-text">星辰爆發 (0/10)</span>
+            </div>
         </div>
         
         <div id="canvas-container" class="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-purple-500/30 mb-4 shadow-lg">
@@ -127,15 +139,20 @@
     <div id="history-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-2xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-history-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">召喚歷史</h2><div id="history-modal-body" class="space-y-2 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="collection-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-collection-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">角色圖鑑</h2><div id="collection-modal-body" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
     <div id="luck-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 text-center"><button id="close-luck-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">本日運勢</h2><div id="luck-modal-body" class="space-y-2"></div></div></div>
-    <div id="achievement-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600"><button id="close-achievement-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">成就殿堂</h2><div class="flex justify-end mb-4"><button id="claim-all-achievements-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">一鍵領取</button></div><div id="achievement-modal-body" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2"></div></div></div>
+    <div id="achievement-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 800px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">成就殿堂</h2><button id="claim-all-achievements-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">一鍵領取</button><button id="close-achievement-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="achievement-modal-body" class="flex-grow min-h-0 flex flex-col"></div></div></div>
     <div id="reset-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-red-500 text-center"><h2 class="text-2xl font-bold text-center mb-4 text-red-400">重置遊戲</h2><p class="text-slate-300 mb-6">您確定要重置所有遊戲進度嗎？<br>這個操作無法復原！</p><div class="flex justify-center space-x-4"><button id="cancel-reset-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">取消</button><button id="confirm-reset-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">確定重置</button></div></div></div>
 
     <script>
         // --- 資料設定 ---
         const CHARACTERS = {
-            N: ['史萊姆', '哥布林', '小妖精', '野狼', '巨大蝙蝠'], R: ['見習騎士', '魔法學徒', '精靈射手', '獸人戰士', '矮人礦工'], SR: ['皇家騎士團長', '大魔導師', '月光祭司', '暗影刺客', '獅鷲騎士'], SSR: ['炎龍騎士', '深淵魔王', '聖光女神', '時空大法師', '風暴射手'], UR: [{ id: 1, name: '創世之神．伊莉苟絲', title: '萬物之始' }, { id: 2, name: '滅世魔龍．巴哈姆特', title: '終焉之息' }, { id: 3, name: '星際旅人．凱恩', title: '時空漫遊者' }], UUR: [{ id: 101, name: '布丁', title: '萬物的真理' }]
+            N: { characters: ['史萊姆', '哥布林', '小妖精', '野狼', '巨大蝙蝠', '劇毒蜘蛛', '洞穴地精'], maxStars: 2 },
+            R: { characters: ['見習騎士', '魔法學徒', '精靈射手', '獸人戰士', '矮人礦工', '見習牧師', '流浪盜賊'], maxStars: 3 },
+            SR: { characters: ['皇家騎士團長', '大魔導師', '月光祭司', '暗影刺客', '獅鷲騎士', '聖殿騎士', '龍裔戰士', '元素使'], maxStars: 4 },
+            SSR: { characters: ['炎龍騎士', '深淵魔王', '聖光女神', '時空大法師', '風暴射手'], maxStars: 5 },
+            UR: { characters: [{ id: 1, name: '創世之神．伊莉苟絲', title: '萬物之始' }, { id: 2, name: '滅世魔龍．巴哈姆特', title: '終焉之息' }, { id: 3, name: '星際旅人．凱恩', title: '時空漫遊者' }], maxStars: 5 },
+            UUR: { characters: [{ id: 101, name: '布丁', title: '萬物的真理' }], maxStars: 5 }
         };
-        const PROBABILITIES = { UR: 0.005, SSR: 0.025, SR: 0.12, R: 0.49, N: 0.36 };
+        const PROBABILITIES = { UR: 0.004, SSR: 0.020, SR: 0.123, R: 0.492, N: 0.361 };
         const PROBABILITIES_FRAGMENT = { UUR: 0.05, UR: 0.25, SSR: 0.70 };
         const PITY_CONFIG = { SR: 10, SSR: 30 };
         const DRAW_COST = { single: 80, multi: 800, fragmentSingle: 120, fragmentMulti: 360 };
@@ -143,11 +160,12 @@
         const DAILY_REWARD = 3000;
         const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
         const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '狂蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
-        const TOTAL_CHARACTER_COUNT = CHARACTERS.N.length + CHARACTERS.R.length + CHARACTERS.SR.length + CHARACTERS.SSR.length + CHARACTERS.UR.length + CHARACTERS.UUR.length;
+        const TOTAL_CHARACTER_COUNT = Object.values(CHARACTERS).reduce((sum, rarity) => sum + rarity.characters.length, 0);
 
         // --- 狀態管理 ---
         let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements;
-        let luckCalculations, fragmentClaims, historyViews, ssrPityTriggered, fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints;
+        let luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints;
+        let noSsrStreak, pullsInPuddingMode;
         let isDrawingAnimation = false;
         let animationFrameId = null;
         let animationResolve = null;
@@ -155,7 +173,7 @@
         let isPuddingModeActive = false;
         let fragmentClaimTimer = 30;
         let fragmentClaimIntervalId = null;
-        let rapidClickCount = 0, rapidClickTimerId = null, isRapidClickOnCooldown = false, rapidClickCooldownTimer = 60;
+        let rapidClickCount = 0, rapidClickTimerId = null, isRapidClickOnCooldown = false, rapidClickCooldownTimer = 60, lastTapArea = null;
 
         // --- DOM 元素 ---
         const dom = {
@@ -171,7 +189,8 @@
             claimAllAchievementsBtn: document.getElementById('claim-all-achievements-btn'),
             resetBtn: document.getElementById('reset-btn'), resetModal: document.getElementById('reset-modal'), confirmResetBtn: document.getElementById('confirm-reset-btn'), cancelResetBtn: document.getElementById('cancel-reset-btn'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
-            claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'), rapidClickBtn: document.getElementById('rapid-click-btn'),
+            claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'), 
+            rapidClickContainer: document.getElementById('rapid-click-container'), rapidClickText: document.getElementById('rapid-click-text'), rapidTapLeftBtn: document.getElementById('rapid-tap-left-btn'), rapidTapRightBtn: document.getElementById('rapid-tap-right-btn'),
             skipAnimationBtn: document.getElementById('skip-animation-btn'), dateDisplay: document.getElementById('date-display'),
             canvasSrPity: document.getElementById('canvas-sr-pity'), canvasSsrPity: document.getElementById('canvas-ssr-pity'), canvasSsrPityMax: document.getElementById('canvas-ssr-pity-max'),
             canvasTotalPulls: document.getElementById('canvas-total-pulls'),
@@ -196,7 +215,7 @@
 
         // --- 抽卡核心邏輯 ---
         function getRarity(probSet, isSrPity = false, isSsrPity = false) { if (probSet === PROBABILITIES) { if (isSsrPity) return Math.random() < (probSet.UR / (probSet.UR + probSet.SSR)) ? 'UR' : 'SSR'; if (isSrPity) { const srPlusProb = probSet.SR + probSet.SSR + probSet.UR; const rand = Math.random(); if (rand < probSet.UR / srPlusProb) return 'UR'; if (rand < (probSet.UR + probSet.SSR) / srPlusProb) return 'SSR'; return 'SR'; } } const rand = Math.random(); let cumulative = 0; for (const rarity in probSet) { cumulative += probSet[rarity]; if (rand < cumulative) { return rarity; } } return 'SSR'; }
-        function drawOneCharacter(probSet, isSrPity = false, isSsrPity = false) { const rarity = getRarity(probSet, isSrPity, isSsrPity); let character; const charactersOfRarity = CHARACTERS[rarity]; if (rarity === 'UR' || rarity === 'UUR') { character = { ...charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)] }; } else { const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; character = { name }; } if (probSet === PROBABILITIES) { if (rarity === 'UR' || rarity === 'SSR') { pityCounters.ssr = 0; pityCounters.sr = 0; } else if (rarity === 'SR') { pityCounters.sr = 0; } } return { ...character, rarity }; }
+        function drawOneCharacter(probSet, isSrPity = false, isSsrPity = false) { const rarity = getRarity(probSet, isSrPity, isSsrPity); let character; const charactersOfRarity = CHARACTERS[rarity].characters; if (rarity === 'UR' || rarity === 'UUR') { character = { ...charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)] }; } else { const name = charactersOfRarity[Math.floor(Math.random() * charactersOfRarity.length)]; character = { name }; } if (probSet === PROBABILITIES) { if (rarity === 'UR' || rarity === 'SSR') { pityCounters.ssr = 0; pityCounters.sr = 0; } else if (rarity === 'SR') { pityCounters.sr = 0; } } return { ...character, rarity }; }
         function processDraw(count, poolType) {
             if (isDrawingAnimation) return;
             const isFragmentPool = poolType === 'fragment';
@@ -207,6 +226,7 @@
             if (currency < cost) { alert(isFragmentPool ? '碎片不足！' : '星塵石不足！'); return; }
             if (constellationPoints.length < 3) { alert('請先在星空中繪製至少連結3顆星的星座！'); return; }
             
+            const startStones = stardustStones;
             maxConstellationPoints = Math.max(maxConstellationPoints, constellationPoints.length);
 
             if (isFragmentPool) { 
@@ -220,23 +240,22 @@
             toggleButtons(false);
 
             const results = [];
+            let hasHighRarity = false;
             for (let i = 0; i < count; i++) {
                 if (!isFragmentPool) { 
                     totalPulls++; 
                     pityCounters.sr++; 
                     pityCounters.ssr++; 
-                    if (pityCounters.ssr >= PITY_CONFIG.SSR) {
-                        ssrPityTriggered = true;
-                    }
+                    if (pityCounters.ssr >= PITY_CONFIG.SSR) { ssrPityTriggered = true; }
                 }
                 const character = drawOneCharacter(isFragmentPool ? PROBABILITIES_FRAGMENT : PROBABILITIES, pityCounters.sr >= PITY_CONFIG.SR, pityCounters.ssr >= PITY_CONFIG.SSR);
+                if (character.rarity === 'SSR' || character.rarity === 'UR' || character.rarity === 'UUR') { hasHighRarity = true; }
                 const charIdentifier = character.id || character.name;
                 
+                const maxStarsForRarity = CHARACTERS[character.rarity].maxStars;
                 if (characterCollection[charIdentifier]) { // Duplicate
                     character.isDuplicate = true;
-                    if (characterCollection[charIdentifier].stars < 5) {
-                        characterCollection[charIdentifier].stars++;
-                    }
+                    if (characterCollection[charIdentifier].stars < maxStarsForRarity) { characterCollection[charIdentifier].stars++; }
                     const fragmentsGained = FRAGMENT_REWARDS[character.rarity];
                     fragments += fragmentsGained;
                     character.fragmentsGained = fragmentsGained;
@@ -249,10 +268,14 @@
                 rarityCounts[character.rarity]++;
                 if (character.rarity === 'UUR' && !isPuddingModeActive) {
                     activatePuddingMode();
-                    isPuddingModeActive = true;
                 }
             }
-            gachaHistory.unshift({ date: new Date().toISOString(), results, isFragmentPool });
+
+            if (count >= 10 && !hasHighRarity) { noSsrStreak++; } else { noSsrStreak = 0; }
+            if (isPuddingModeActive) { pullsInPuddingMode += count; }
+
+            const endStones = stardustStones;
+            gachaHistory.unshift({ date: new Date().toISOString(), results, isFragmentPool, startStones, endStones, constellationPoints: constellationPoints.length });
             if (gachaHistory.length > 50) gachaHistory.pop();
             results.sort((a, b) => { const order = { UUR: 6, UR: 5, SSR: 4, SR: 3, R: 2, N: 1 }; return order[b.rarity] - order[a.rarity]; });
             
@@ -390,8 +413,8 @@
 
         // --- Modal & Features ---
         function setDate() { const today = new Date(); dom.dateDisplay.textContent = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; }
-        function activatePuddingMode() { dom.body.classList.add('pudding-mode'); }
-        function generateStarRating(rating) { let stars = ''; for (let i = 0; i < 5; i++) { stars += i < rating ? '★' : '☆'; } return stars; }
+        function activatePuddingMode() { dom.body.classList.add('pudding-mode'); isPuddingModeActive = true; }
+        function generateStarRating(rating, max) { let stars = ''; for (let i = 0; i < max; i++) { stars += i < rating ? '★' : '☆'; } return stars; }
         function calculateAndShowLuck() {
             const today = new Date().toDateString();
             const todayPulls = gachaHistory.filter(entry => new Date(entry.date).toDateString() === today).flatMap(entry => entry.results);
@@ -410,7 +433,7 @@
             const moneyScore = todayRarityCounts.SSR * 2 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
             let moneyRating = 1; if (moneyScore > 50) moneyRating = 5; else if (moneyScore > 25) moneyRating = 4; else if (moneyScore > 10) moneyRating = 3; else if (moneyScore > 0) moneyRating = 2;
             const luck = luckLevels[highestRarity];
-            dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><div class="text-left mt-4 space-y-1 text-yellow-300"><p>戀愛運：${generateStarRating(loveRating)}</p><p>事業運：${generateStarRating(workRating)}</p><p>金錢運：${generateStarRating(moneyRating)}</p></div><p class="mt-4 text-slate-300 text-left">${luck.text}</p>`;
+            dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><div class="text-left mt-4 space-y-1 text-yellow-300"><p>戀愛運：${generateStarRating(loveRating, 5)}</p><p>事業運：${generateStarRating(workRating, 5)}</p><p>金錢運：${generateStarRating(moneyRating, 5)}</p></div><p class="mt-4 text-slate-300 text-left">${luck.text}</p>`;
             dom.luckModal.classList.remove('hidden');
         }
         function showToast(message) {
@@ -423,17 +446,20 @@
         function populateInfoModal() {
             dom.infoModalBody.innerHTML = '';
             const mainPoolTitle = document.createElement('h4'); mainPoolTitle.className = 'text-lg font-bold text-yellow-300 border-b border-yellow-300/50 pb-1 mb-2'; mainPoolTitle.textContent = '星塵石召喚'; dom.infoModalBody.appendChild(mainPoolTitle);
-            ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => { const prob = PROBABILITIES[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
+            ['UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => { const prob = PROBABILITIES[rarity]; const characters = CHARACTERS[rarity].characters; const section = document.createElement('div'); section.className = 'pb-2'; const names = (rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、'); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1)}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
             const fragmentPoolTitle = document.createElement('h4'); fragmentPoolTitle.className = 'text-lg font-bold text-cyan-300 border-b border-cyan-300/50 pb-1 mb-2 mt-4'; fragmentPoolTitle.textContent = '碎片召喚'; dom.infoModalBody.appendChild(fragmentPoolTitle);
-            ['UUR', 'UR', 'SSR'].forEach(rarity => { const prob = PROBABILITIES_FRAGMENT[rarity]; const characters = CHARACTERS[rarity]; const section = document.createElement('div'); section.className = 'pb-2'; const isUURCollected = characterCollection[CHARACTERS.UUR[0].id]; const names = (rarity === 'UUR' && !isUURCollected) ? '???' : ((rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、')); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
+            ['UUR', 'UR', 'SSR'].forEach(rarity => { const prob = PROBABILITIES_FRAGMENT[rarity]; const characters = CHARACTERS[rarity].characters; const section = document.createElement('div'); section.className = 'pb-2'; const isUURCollected = characterCollection[CHARACTERS.UUR.characters[0].id]; const names = (rarity === 'UUR' && !isUURCollected) ? '???' : ((rarity === 'UUR' || rarity === 'UR') ? characters.map(c => c.name).join('、') : characters.join('、')); section.innerHTML = `<h3 class="text-xl font-bold text-rarity-${rarity.toLowerCase()}">${rarity} (機率: ${(prob*100).toFixed(1).replace('.0','')}%)</h3><p class="text-slate-300 text-sm mt-1 break-words">包含角色：${names}</p>`; dom.infoModalBody.appendChild(section); });
         }
         function populateHistoryModal() { dom.historyModalBody.innerHTML = ''; if (gachaHistory.length === 0) { dom.historyModalBody.innerHTML = '<p class="text-center text-slate-400">尚無召喚紀錄</p>'; return; } gachaHistory.forEach(entry => { const entryDiv = document.createElement('div'); entryDiv.className = 'p-2 bg-slate-700/50 rounded'; const time = new Date(entry.date).toLocaleString(); const summary = entry.results.map(r => `<span class="font-bold text-rarity-${r.rarity.toLowerCase()}">${r.rarity}</span>`).join(' '); entryDiv.innerHTML = `<p class="text-xs text-slate-400 mb-1">${time}</p><div class="flex flex-wrap gap-2">${summary}</div>`; dom.historyModalBody.appendChild(entryDiv); }); }
         function populateCollectionModal() {
             dom.collectionModalBody.innerHTML = '';
             ['UUR', 'UR', 'SSR', 'SR', 'R', 'N'].forEach(rarity => {
-                const characters = CHARACTERS[rarity]; if (!characters || characters.length === 0) return;
+                const rarityData = CHARACTERS[rarity];
+                const characters = rarityData.characters; 
+                const maxStars = rarityData.maxStars;
+                if (!characters || characters.length === 0) return;
                 const section = document.createElement('div'); section.className = 'pb-2 border-b border-slate-700 last:border-b-0';
-                const title = document.createElement('h3'); title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`; title.textContent = rarity; section.appendChild(title);
+                const title = document.createElement('h3'); title.className = `text-xl font-bold text-rarity-${rarity.toLowerCase()}`; title.textContent = `${rarity} (上限 ${maxStars}★)`; section.appendChild(title);
                 const grid = document.createElement('div'); grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2';
                 characters.forEach(char => {
                     const charData = (typeof char === 'object') ? char : { name: char }; const charIdentifier = charData.id || charData.name;
@@ -441,8 +467,8 @@
                     const card = document.createElement('div'); card.className = `p-2 rounded-lg text-center transition-all duration-300 ${collectedData ? `rarity-${rarity.toLowerCase()} bg-slate-900/70` : 'bg-slate-700/50'}`;
                     if (collectedData) {
                         const stars = collectedData.stars;
-                        if (stars === 5) card.classList.add('star-5-glow');
-                        const starDisplay = `<div class="star-rating text-lg">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>`;
+                        if (stars === maxStars) card.classList.add('star-max-glow');
+                        const starDisplay = `<div class="star-rating text-lg">${'★'.repeat(stars)}${'☆'.repeat(maxStars - stars)}</div>`;
                         card.innerHTML = `<p class="font-bold">${charData.name}</p>${charData.title ? `<p class="text-xs text-yellow-300/80">${charData.title}</p>` : ''}${starDisplay}`;
                     } else { card.innerHTML = `<p class="font-bold text-slate-400">???</p>`; card.classList.add('grayscale'); }
                     grid.appendChild(card);
@@ -500,36 +526,73 @@
         }
         function populateAchievementModal() {
             dom.achievementModalBody.innerHTML = '';
+            dom.achievementModalBody.classList.add('flex', 'flex-col');
             const hasUnlockable = Object.values(achievements).some(ach => ach.status === 'unlocked');
             dom.claimAllAchievementsBtn.disabled = !hasUnlockable;
 
-            Object.keys(achievements).forEach(key => {
-                const ach = achievements[key];
-                if (key === 'puddingTruth' && ach.status === 'locked') { return; }
-                const achDiv = document.createElement('div');
-                achDiv.className = `flex items-center justify-between p-3 rounded-lg ${ach.status !== 'locked' ? 'bg-slate-700' : 'bg-slate-900/50'}`;
-                let rewardText = '';
-                if (ach.reward.stones > 0) rewardText += `💎 ${ach.reward.stones} `;
-                if (ach.reward.fragments > 0) rewardText += `✨ ${ach.reward.fragments}`;
-                achDiv.innerHTML = `<div><h4 class="font-bold text-lg ${ach.status !== 'locked' ? 'text-yellow-300' : 'text-slate-300'}">${ach.name}</h4><p class="text-sm text-slate-400">${ach.description}</p><p class="text-sm font-bold text-cyan-300 mt-1">獎勵: ${rewardText}</p></div>`;
-                const button = document.createElement('button');
-                button.className = 'font-bold py-2 px-5 rounded-lg transition-colors';
-                if (ach.status === 'unlocked') {
-                    button.textContent = '領取';
-                    button.className += ' bg-yellow-500 hover:bg-yellow-400 text-slate-900';
-                    button.onclick = () => claimAchievement(key);
-                } else if (ach.status === 'claimed') {
-                    button.textContent = '已領取';
-                    button.className += ' bg-gray-600 cursor-not-allowed';
-                    button.disabled = true;
-                } else {
-                    button.textContent = '未達成';
-                    button.className += ' bg-gray-800 text-gray-500 cursor-not-allowed';
-                    button.disabled = true;
+            const achievementCategories = {
+                '新手啟程': ['firstDraw', 'firstMultiDraw', 'firstFragmentPull', 'knowTheOdds', 'aNewBeginning', 'diligentCollector', 'historian', 'theArchivist', 'quickDraw'],
+                '收藏之路': ['nCollector', 'rMaster', 'srMaster', 'ssrMaster', 'urMaster', 'galleryExpert', 'rainbowCollection', 'godAndDemon', 'knightsVow', 'magicMystery', 'collectorSorrow'],
+                '星級大師': ['twoStar', 'fourStar', 'first5Star', 'srPerfection', 'fiveStarSSR', 'starForged', 'fiveStarTeam', 'threeStarTeam', 'overflowingStarlight', 'balancedDevelopment', 'flameDragonMaster', 'rElite', 'srElite', 'earlyMaxOut'],
+                '幸運時刻': ['firstSSR', 'firstUR', 'allN', 'allR', 'doubleSSR', 'tripleSSR', 'perfectTen', 'singlePullLuck', 'archdukeOfEurope', 'midasTouch', 'perfectConstellation', 'pityEnjoyer', 'abyssStaresBack', 'rockBottomLuck'],
+                '特殊挑戰': ['total100', 'total500', 'fragmentHoarder', 'fortuneTeller', 'stardustHoarder', 'fragmentSummoner', 'theGambler', 'dailyPersistence', 'thePatient', 'constellationMaster', 'starryNight', 'bigSpender', 'puddingEnjoyer', 'penniless', 'fragmentBanker', 'pacifist', 'allOrNothing', 'theStrategist', 'starCollector']
+            };
+
+            const tabNav = document.createElement('div');
+            tabNav.id = 'achievement-tabs';
+            tabNav.className = 'flex border-b border-slate-700 mb-4 overflow-x-auto flex-shrink-0';
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'overflow-y-auto flex-grow';
+
+            Object.keys(achievementCategories).forEach((category, index) => {
+                const tabButton = document.createElement('button');
+                const panelId = `ach-panel-${category.replace(/\s/g, '-')}`;
+                tabButton.className = `ach-tab-btn flex-shrink-0 py-2 px-4 font-semibold whitespace-nowrap transition-colors duration-200 ${index === 0 ? 'text-cyan-300 border-b-2 border-cyan-300' : 'text-slate-400 border-b-2 border-transparent hover:text-white'}`;
+                tabButton.textContent = category;
+                tabButton.dataset.target = panelId;
+                tabNav.appendChild(tabButton);
+
+                const contentPanel = document.createElement('div');
+                contentPanel.id = panelId;
+                contentPanel.className = `ach-content-panel space-y-3 pr-2 ${index !== 0 ? 'hidden' : ''}`;
+                
+                const categoryAchievements = achievementCategories[category];
+                if (categoryAchievements) {
+                    categoryAchievements.forEach(key => {
+                        const ach = achievements[key];
+                        if (!ach) return;
+                        if (key === 'puddingTruth' && ach.status === 'locked') return;
+                        
+                        const achDiv = document.createElement('div');
+                        achDiv.className = `flex items-center justify-between p-3 rounded-lg ${ach.status !== 'locked' ? 'bg-slate-700' : 'bg-slate-900/50'}`;
+                        let rewardText = '';
+                        if (ach.reward.stones > 0) rewardText += `💎 ${ach.reward.stones} `;
+                        if (ach.reward.fragments > 0) rewardText += `✨ ${ach.reward.fragments}`;
+                        achDiv.innerHTML = `<div><h4 class="font-bold text-lg ${ach.status !== 'locked' ? 'text-yellow-300' : 'text-slate-300'}">${ach.name}</h4><p class="text-sm text-slate-400">${ach.description}</p><p class="text-sm font-bold text-cyan-300 mt-1">獎勵: ${rewardText}</p></div>`;
+                        const button = document.createElement('button');
+                        button.className = 'font-bold py-2 px-5 rounded-lg transition-colors flex-shrink-0 ml-4';
+                        if (ach.status === 'unlocked') {
+                            button.textContent = '領取';
+                            button.className += ' bg-yellow-500 hover:bg-yellow-400 text-slate-900';
+                            button.onclick = () => claimAchievement(key);
+                        } else if (ach.status === 'claimed') {
+                            button.textContent = '已領取';
+                            button.className += ' bg-gray-600 cursor-not-allowed';
+                            button.disabled = true;
+                        } else {
+                            button.textContent = '未達成';
+                            button.className += ' bg-gray-800 text-gray-500 cursor-not-allowed';
+                            button.disabled = true;
+                        }
+                        achDiv.appendChild(button);
+                        contentPanel.appendChild(achDiv);
+                    });
                 }
-                achDiv.appendChild(button);
-                dom.achievementModalBody.appendChild(achDiv);
+                contentContainer.appendChild(contentPanel);
             });
+
+            dom.achievementModalBody.appendChild(tabNav);
+            dom.achievementModalBody.appendChild(contentContainer);
         }
         
         // --- 事件監聽 ---
@@ -539,11 +602,25 @@
             dom.drawFragmentBtn1.addEventListener('click', () => processDraw(1, 'fragment'));
             dom.drawFragmentBtn3.addEventListener('click', () => processDraw(3, 'fragment'));
             dom.claimDailyBtn.addEventListener('click', () => { stardustStones += DAILY_REWARD; dailyClaims++; dom.claimDailyBtn.disabled = true; dom.claimDailyBtn.textContent = '已領取'; checkAchievements(); updateAllUI(); saveData(); });
-            dom.resetBtn.addEventListener('click', () => dom.resetModal.classList.remove('hidden'));
+            dom.resetBtn.addEventListener('click', () => { 
+                if (localStorage.getItem('hasResetOnce') !== 'true') {
+                    const ach = achievements['aNewBeginning'];
+                    if (ach.status === 'locked') {
+                       stardustStones += ach.reward.stones;
+                       fragments += ach.reward.fragments;
+                       ach.status = 'claimed';
+                       showToast('達成成就：嶄新開端！');
+                       localStorage.setItem('hasResetOnce', 'true');
+                       saveData();
+                    }
+                }
+                dom.resetModal.classList.remove('hidden'); 
+            });
             dom.confirmResetBtn.addEventListener('click', () => { dom.resetModal.classList.add('hidden'); resetGame(); });
             dom.cancelResetBtn.addEventListener('click', () => dom.resetModal.classList.add('hidden'));
             dom.claimAllAchievementsBtn.addEventListener('click', claimAllAchievements);
-            dom.rapidClickBtn.addEventListener('click', handleRapidClick);
+            dom.rapidTapLeftBtn.addEventListener('click', () => handleRapidClick('left'));
+            dom.rapidTapRightBtn.addEventListener('click', () => handleRapidClick('right'));
             
             const startDrawing = (x, y) => { if (isDrawingAnimation) return; isDrawing = true; constellationPoints = [{ x, y }]; dom.canvasOverlay.style.display = 'none'; };
             const draw = (x, y) => { if (!isDrawing || isDrawingAnimation) return; constellationPoints.push({ x, y }); drawStars(); drawConstellation(); };
@@ -557,7 +634,7 @@
 
             window.addEventListener('resize', () => { resizeCanvas(); generateStars(100); drawStars(); });
             
-            dom.infoBtn.addEventListener('click', () => { populateInfoModal(); dom.infoModal.classList.remove('hidden'); });
+            dom.infoBtn.addEventListener('click', () => { populateInfoModal(); dom.infoModal.classList.remove('hidden'); infoViews++; checkAchievements(); saveData(); });
             dom.closeInfoModalBtn.addEventListener('click', () => dom.infoModal.classList.add('hidden'));
             dom.historyBtn.addEventListener('click', () => { populateHistoryModal(); dom.historyModal.classList.remove('hidden'); historyViews++; checkAchievements(); saveData(); });
             dom.closeHistoryModalBtn.addEventListener('click', () => dom.historyModal.classList.add('hidden'));
@@ -569,6 +646,26 @@
             dom.closeAchievementModalBtn.addEventListener('click', () => dom.achievementModal.classList.add('hidden'));
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { skipAnimationUses++; checkAchievements(); saveData(); cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
             dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; fragmentClaims++; updateAllUI(); startFragmentTimer(); checkAchievements(); saveData(); });
+        
+            dom.achievementModal.addEventListener('click', (e) => {
+                const button = e.target.closest('.ach-tab-btn');
+                if (button) {
+                    dom.achievementModal.querySelectorAll('.ach-tab-btn').forEach(btn => {
+                        btn.classList.remove('text-cyan-300', 'border-cyan-300');
+                        btn.classList.add('text-slate-400', 'border-transparent');
+                    });
+                    dom.achievementModal.querySelectorAll('.ach-content-panel').forEach(panel => {
+                        panel.classList.add('hidden');
+                    });
+                    
+                    button.classList.add('text-cyan-300', 'border-cyan-300');
+                    button.classList.remove('text-slate-400', 'border-transparent');
+                    const targetPanel = document.getElementById(button.dataset.target);
+                    if (targetPanel) {
+                        targetPanel.classList.remove('hidden');
+                    }
+                }
+            });
         }
 
         function startFragmentTimer() {
@@ -587,24 +684,38 @@
             }, 1000);
         }
 
-        function handleRapidClick() {
+        function handleRapidClick(side) {
             if (isRapidClickOnCooldown) return;
+            if (side === lastTapArea) {
+                clearTimeout(rapidClickTimerId);
+                rapidClickCount = 0;
+                lastTapArea = null;
+                dom.rapidClickText.textContent = `請交替點擊！`;
+                setTimeout(() => {
+                    if (!isRapidClickOnCooldown) dom.rapidClickText.textContent = `星辰爆發 (0/10)`;
+                }, 1000);
+                return;
+            }
 
+            lastTapArea = side;
+            
             if (rapidClickCount === 0) {
                 rapidClickTimerId = setTimeout(() => {
                     rapidClickCount = 0;
-                    dom.rapidClickBtn.textContent = '星辰爆發 (0/10)';
-                }, 2000); // 2-second window
+                    lastTapArea = null;
+                    dom.rapidClickText.textContent = '星辰爆發 (0/10)';
+                }, 2000);
             }
 
             rapidClickCount++;
-            dom.rapidClickBtn.textContent = `星辰爆發 (${rapidClickCount}/10)`;
+            dom.rapidClickText.textContent = `星辰爆發 (${rapidClickCount}/10)`;
 
             if (rapidClickCount >= 10) {
                 clearTimeout(rapidClickTimerId);
                 stardustStones += 1000;
                 showToast('取得 1000 星塵石');
                 rapidClickCount = 0;
+                lastTapArea = null;
                 startRapidClickCooldown();
                 updateAllUI();
                 saveData();
@@ -613,17 +724,17 @@
 
         function startRapidClickCooldown() {
             isRapidClickOnCooldown = true;
-            dom.rapidClickBtn.disabled = true;
-            rapidClickCooldownTimer = 60; // 60s cooldown
+            dom.rapidClickContainer.classList.add('opacity-50', 'cursor-not-allowed');
+            rapidClickCooldownTimer = 60; 
 
             const intervalId = setInterval(() => {
                 rapidClickCooldownTimer--;
-                dom.rapidClickBtn.textContent = `冷卻中 (${rapidClickCooldownTimer}s)`;
+                dom.rapidClickText.textContent = `冷卻中 (${rapidClickCooldownTimer}s)`;
                 if (rapidClickCooldownTimer <= 0) {
                     clearInterval(intervalId);
                     isRapidClickOnCooldown = false;
-                    dom.rapidClickBtn.disabled = false;
-                    dom.rapidClickBtn.textContent = '星辰爆發 (0/10)';
+                    dom.rapidClickContainer.classList.remove('opacity-50', 'cursor-not-allowed');
+                    dom.rapidClickText.textContent = '星辰爆發 (0/10)';
                 }
             }, 1000);
         }
@@ -633,47 +744,72 @@
             return {
                 'firstDraw': { name: '初試啼聲', description: '進行首次召喚', reward: { stones: 40, fragments: 0 }, status: 'locked', condition: () => totalPulls >= 1 },
                 'firstMultiDraw': { name: '星群的共鳴', description: '進行首次10連召喚', reward: { stones: 120, fragments: 0 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10) },
-                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 240, fragments: 40 }, status: 'locked', condition: () => totalPulls >= 100 },
-                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 200, fragments: 20 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
-                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 400, fragments: 40 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
+                'firstFragmentPull': { name: '首次碎片召喚', description: '進行首次碎片召喚', reward: { stones: 50, fragments: 20 }, status: 'locked', condition: () => fragmentSummons > 0 },
+                'knowTheOdds': { name: '知己知彼', description: '首次打開召喚詳情面板', reward: { stones: 30, fragments: 0 }, status: 'locked', condition: () => infoViews > 0 },
+                'aNewBeginning': { name: '嶄新開端', description: '首次重置遊戲進度', reward: { stones: 1000, fragments: 0 }, status: 'locked', condition: () => false }, // Handled manually
+                'nCollector': { name: '底層收藏家', description: '集齊所有N級角色', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => CHARACTERS.N.characters.every(name => characterCollection[name]) },
+                'rMaster': { name: 'R級大師', description: '集齊所有R級角色', reward: { stones: 80, fragments: 15 }, status: 'locked', condition: () => CHARACTERS.R.characters.every(name => characterCollection[name]) },
+                'srMaster': { name: 'SR收藏家', description: '集齊所有SR級角色', reward: { stones: 160, fragments: 30 }, status: 'locked', condition: () => CHARACTERS.SR.characters.every(name => characterCollection[name]) },
+                'ssrMaster': { name: 'SSR鑄造師', description: '集齊所有SSR級角色', reward: { stones: 320, fragments: 60 }, status: 'locked', condition: () => CHARACTERS.SSR.characters.every(name => characterCollection[name]) },
+                'urMaster': { name: 'UR潛意識', description: '集齊所有UR級角色', reward: { stones: 800, fragments: 160 }, status: 'locked', condition: () => CHARACTERS.UR.characters.every(char => characterCollection[char.id]) },
+                'galleryExpert': { name: '圖鑑專家', description: '解鎖圖鑑中75%的角色', reward: { stones: 400, fragments: 100 }, status: 'locked', condition: () => (Object.keys(characterCollection).length / TOTAL_CHARACTER_COUNT) >= 0.75 },
+                'rainbowCollection': { name: '彩虹收藏', description: 'N, R, SR, SSR, UR稀有度的角色至少各擁有一名', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => ['N', 'R', 'SR', 'SSR', 'UR'].every(r => rarityCounts[r] > 0) },
+                'godAndDemon': { name: '神魔之巔', description: '同時擁有創世之神與滅世魔龍', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => characterCollection[1] && characterCollection[2] },
+                'knightsVow': { name: '騎士的誓言', description: '集齊所有「騎士」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => ['見習騎士', '皇家騎士團長', '炎龍騎士', '聖殿騎士'].every(name => characterCollection[name]) },
+                'magicMystery': { name: '魔法的奧秘', description: '集齊所有「法師」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => ['魔法學徒', '大魔導師', '時空大法師', '元素使'].every(name => characterCollection[name]) },
+                'collectorSorrow': { name: '收藏家之悲', description: '集齊所有N和R卡，但尚未擁有UR', reward: { stones: 100, fragments: 50 }, status: 'locked', condition: () => CHARACTERS.N.characters.every(name => characterCollection[name]) && CHARACTERS.R.characters.every(name => characterCollection[name]) && rarityCounts.UR === 0 },
                 'twoStar': { name: '星光乍現', description: '首次將任意角色升至2星', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 2) },
                 'fourStar': { name: '星辰之力', description: '首次將任意角色升至4星', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 4) },
                 'first5Star': { name: '登峰造極', description: '首次將任意角色升至5星', reward: { stones: 400, fragments: 80 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
+                'srPerfection': { name: 'SR的極致', description: '擁有一名滿星(4星)的SR角色', reward: { stones: 300, fragments: 60 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SR' && c.stars >= CHARACTERS.SR.maxStars) },
+                'fiveStarSSR': { name: '傳說的巔峰', description: '擁有一名滿星(5星)的SSR角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SSR' && c.stars >= CHARACTERS.SSR.maxStars) },
+                'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= CHARACTERS[c.rarity].maxStars).length >= 3 },
+                'fiveStarTeam': { name: '五星戰隊', description: '擁有5名或以上滿星角色', reward: { stones: 800, fragments: 150 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= CHARACTERS[c.rarity].maxStars).length >= 5 },
+                'threeStarTeam': { name: '三星戰隊', description: '擁有5名或以上三星角色', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 3).length >= 5 },
+                'overflowingStarlight': { name: '星光滿溢', description: '所有角色總星數達到50', reward: { stones: 250, fragments: 50 }, status: 'locked', condition: () => Object.values(characterCollection).reduce((sum, char) => sum + char.stars, 0) >= 50 },
+                'balancedDevelopment': { name: '均衡發展', description: 'N, R, SR, SSR稀有度都至少擁有一名二星角', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => ['N', 'R', 'SR', 'SSR'].every(r => Object.values(characterCollection).some(c => c.rarity === r && c.stars >= 2)) },
+                'flameDragonMaster': { name: '炎龍大師', description: '將「炎龍騎士」升至滿星', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => characterCollection['炎龍騎士'] && characterCollection['炎龍騎士'].stars >= CHARACTERS.SSR.maxStars },
+                'rElite': { name: 'R級精英', description: '將所有R級角色升至2星', reward: { stones: 150, fragments: 80 }, status: 'locked', condition: () => CHARACTERS.R.characters.every(name => characterCollection[name] && characterCollection[name].stars >= 2) },
+                'srElite': { name: 'SR級精英', description: '將所有SR級角色升至2星', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => CHARACTERS.SR.characters.every(name => characterCollection[name] && characterCollection[name].stars >= 2) },
+                'earlyMaxOut': { name: '早期優勢', description: '100抽內就擁有一名滿星角色', reward: { stones: 250, fragments: 50 }, status: 'locked', condition: () => totalPulls <= 100 && Object.values(characterCollection).some(c => c.stars >= CHARACTERS[c.rarity].maxStars) },
+                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 200, fragments: 20 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
+                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 400, fragments: 40 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
                 'allN': { name: 'NNNNN?', description: '在10連召喚中5張以上為N卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'N').length >= 5) },
                 'allR': { name: 'RRRRR!', description: '在10連召喚中5張以上為R卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'R').length >= 5) },
-                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 250, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'SSR' || r.rarity === 'UR' || r.rarity === 'UUR').length >= 2) },
-                'rMaster': { name: 'R級大師', description: '集齊所有R級角色', reward: { stones: 80, fragments: 15 }, status: 'locked', condition: () => CHARACTERS.R.every(name => characterCollection[name]) },
-                'srMaster': { name: 'SR收藏家', description: '集齊所有SR級角色', reward: { stones: 160, fragments: 30 }, status: 'locked', condition: () => CHARACTERS.SR.every(name => characterCollection[name]) },
-                'fiveStarSR': { name: '精英的極致', description: '擁有一名滿星(5星)的SR角色', reward: { stones: 300, fragments: 60 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SR' && c.stars >= 5) },
-                'ssrMaster': { name: 'SSR鑄造師', description: '集齊所有SSR級角色', reward: { stones: 320, fragments: 60 }, status: 'locked', condition: () => CHARACTERS.SSR.every(name => characterCollection[name]) },
-                'fiveStarSSR': { name: '傳說的巔峰', description: '擁有一名滿星(5星)的SSR角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SSR' && c.stars >= 5) },
-                'urMaster': { name: 'UR潛意識', description: '集齊所有UR級角色', reward: { stones: 800, fragments: 160 }, status: 'locked', condition: () => CHARACTERS.UR.every(char => characterCollection[char.id]) },
-                'puddingTruth': { name: '布丁的真理', description: '召喚到傳說中的布丁', reward: { stones: 888, fragments: 88 }, status: 'locked', condition: () => rarityCounts.UUR > 0 },
-                'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星(5星)角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 5).length >= 3 },
-                'fragmentHoarder': { name: '碎片富翁', description: '累計擁有超過1000碎片', reward: { stones: 150, fragments: 80 }, status: 'locked', condition: () => fragments >= 1000 },
+                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 250, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 2) },
+                'tripleSSR': { name: '三倍的喜悅', description: '在一次10連召喚中獲得3名或以上SSR/UR角色', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 3) },
+                'perfectTen': { name: '完美的十連', description: '十連召喚中沒有N卡', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && !h.results.some(r => r.rarity === 'N')) },
                 'singlePullLuck': { name: '一發入魂', description: '在「召喚x1」中直接獲得SSR或UR角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length === 1 && (h.results[0].rarity === 'SSR' || h.results[0].rarity === 'UR')) },
+                'archdukeOfEurope': { name: '歐洲大公', description: '在一次10連召喚中獲得2名或以上UR角色', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'UR').length >= 2) },
+                'midasTouch': { name: '點石成金', description: '透過碎片召喚獲得UR或UUR角色', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.isFragmentPool && h.results.some(r => r.rarity === 'UR' || r.rarity === 'UUR')) },
+                'perfectConstellation': { name: '完美星座', description: '繪製一個剛好7個節點的星座並召喚', reward: { stones: 77, fragments: 7 }, status: 'locked', condition: () => gachaHistory.some(h => h.constellationPoints === 7) },
+                'total100': { name: '百次觀星', description: '累計召喚100次', reward: { stones: 240, fragments: 40 }, status: 'locked', condition: () => totalPulls >= 100 },
+                'total500': { name: '五百次凝望', description: '累計召喚500次', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => totalPulls >= 500 },
+                'fragmentHoarder': { name: '碎片富翁', description: '累計擁有超過1000碎片', reward: { stones: 150, fragments: 80 }, status: 'locked', condition: () => fragments >= 1000 },
                 'pityEnjoyer': { name: '保底的溫暖', description: '首次觸發SSR保底機制', reward: { stones: 50, fragments: 0 }, status: 'locked', condition: () => ssrPityTriggered },
-                'godAndDemon': { name: '神魔之巔', description: '同時擁有創世之神與滅世魔龍', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => characterCollection[1] && characterCollection[2] },
-                'knightsVow': { name: '騎士的誓言', description: '集齊所有「騎士」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => characterCollection['見習騎士'] && characterCollection['皇家騎士團長'] && characterCollection['炎龍騎士'] },
-                'magicMystery': { name: '魔法的奧秘', description: '集齊所有「法師」類型的角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => characterCollection['魔法學徒'] && characterCollection['大魔導師'] && characterCollection['時空大法師'] },
                 'fortuneTeller': { name: '運勢占卜師', description: '累計使用「結算本日運勢」功能5次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => luckCalculations >= 5 },
                 'diligentCollector': { name: '勤能補拙', description: '累計領取免費碎片3次', reward: { stones: 100, fragments: 50 }, status: 'locked', condition: () => fragmentClaims >= 3 },
                 'historian': { name: '歷史學家', description: '累計查看召喚歷史3次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => historyViews >= 3 },
+                'theArchivist': { name: '檔案管理員', description: '累計查看召喚歷史10次', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => historyViews >= 10 },
                 'stardustHoarder': { name: '星塵富翁', description: '累計擁有超過9000星塵石', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => stardustStones > 9000 },
-                'fiveStarTeam': { name: '五星戰隊', description: '擁有5名或以上滿星(5星)角色', reward: { stones: 800, fragments: 150 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 5).length >= 5 },
-                'rainbowCollection': { name: '彩虹收藏', description: 'N, R, SR, SSR, UR稀有度的角色至少各擁有一名', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => ['N', 'R', 'SR', 'SSR', 'UR'].every(r => rarityCounts[r] > 0) },
                 'rockBottomLuck': { name: '墊底的運氣', description: '在10連召喚中只獲得N和R角色', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.every(r => r.rarity === 'N' || r.rarity === 'R')) },
                 'fragmentSummoner': { name: '碎片召喚師', description: '累計進行10次碎片召喚', reward: { stones: 100, fragments: 50 }, status: 'locked', condition: () => fragmentSummons >= 10 },
-                'threeStarTeam': { name: '三星戰隊', description: '擁有5名或以上三星角色', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 3).length >= 5 },
-                'archdukeOfEurope': { name: '歐洲大公', description: '在一次10連召喚中獲得2名或以上UR角色', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'UR').length >= 2) },
-                'midasTouch': { name: '點石成金', description: '透過碎片召喚獲得UR或UUR角色', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.isFragmentPool && h.results.some(r => r.rarity === 'UR' || r.rarity === 'UUR')) },
+                'theGambler': { name: '真正的賭徒', description: '累計進行50次碎片召喚', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => fragmentSummons >= 50 },
                 'dailyPersistence': { name: '每日的堅持', description: '累計領取每日獎勵7次', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => dailyClaims >= 7 },
+                'thePatient': { name: '有耐心的人', description: '累計領取每日獎勵30次', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => dailyClaims >= 30 },
                 'constellationMaster': { name: '星座大師', description: '在召喚前繪製一個超過12個節點的星座', reward: { stones: 80, fragments: 20 }, status: 'locked', condition: () => maxConstellationPoints >= 12 },
+                'starryNight': { name: '星空畫家', description: '繪製一個超過20個節點的星座', reward: { stones: 120, fragments: 30 }, status: 'locked', condition: () => maxConstellationPoints >= 20 },
                 'quickDraw': { name: '速戰速決', description: '累計使用「跳過動畫」功能10次', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => skipAnimationUses >= 10 },
-                'overflowingStarlight': { name: '星光滿溢', description: '所有角色總星數達到50', reward: { stones: 250, fragments: 50 }, status: 'locked', condition: () => Object.values(characterCollection).reduce((sum, char) => sum + char.stars, 0) >= 50 },
                 'bigSpender': { name: '一擲千金', description: '累計花費超過50000星塵石', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => totalStonesSpent >= 50000 },
-                'balancedDevelopment': { name: '均衡發展', description: 'N, R, SR, SSR稀有度都至少擁有一名二星角', reward: { stones: 150, fragments: 50 }, status: 'locked', condition: () => ['N', 'R', 'SR', 'SSR'].every(r => Object.values(characterCollection).some(c => c.rarity === r && c.stars >= 2)) },
-                'galleryExpert': { name: '圖鑑專家', description: '解鎖圖鑑中75%的角色', reward: { stones: 400, fragments: 100 }, status: 'locked', condition: () => (Object.keys(characterCollection).length / TOTAL_CHARACTER_COUNT) >= 0.75 },
+                'abyssStaresBack': { name: '深淵凝視', description: '連續3次10連召喚未獲得SSR或UR角色', reward: { stones: 100, fragments: 50 }, status: 'locked', condition: () => noSsrStreak >= 3 },
+                'puddingEnjoyer': { name: '布丁愛好者', description: '在布丁主題下進行10次召喚', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => pullsInPuddingMode >= 10 },
+                'penniless': { name: '一貧如洗', description: '星塵石低於80且碎片低於120', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => stardustStones < 80 && fragments < 120 },
+                'fragmentBanker': { name: '碎片銀行家', description: '累計擁有超過10000碎片', reward: { stones: 300, fragments: 200 }, status: 'locked', condition: () => fragments >= 10000 },
+                'pacifist': { name: '和平主義者', description: '累計召喚100次且從未使用跳過功能', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => totalPulls >= 100 && skipAnimationUses === 0 },
+                'allOrNothing': { name: '傾家蕩產', description: '一次性將超過10000的星塵石花到低於80', reward: { stones: 300, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => !h.isFragmentPool && h.results.length > 1 && h.startStones > 10000 && h.endStones < 80) },
+                'theStrategist': { name: '策略家', description: '在星塵石恰好足夠一次十連時召喚(800-879)', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => gachaHistory.some(h => !h.isFragmentPool && h.results.length === 10 && h.startStones >= 800 && h.startStones < 880) },
+                'starCollector': { name: '繁星收藏家', description: '所有角色總星數達到100', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => Object.values(characterCollection).reduce((sum, char) => sum + char.stars, 0) >= 100 },
+                'puddingTruth': { name: '布丁的真理', description: '召喚到傳說中的布丁', reward: { stones: 888, fragments: 88 }, status: 'locked', condition: () => rarityCounts.UUR > 0 },
             };
         }
         
@@ -688,17 +824,21 @@
             luckCalculations = 0;
             fragmentClaims = 0;
             historyViews = 0;
+            infoViews = 0;
             ssrPityTriggered = false;
             fragmentSummons = 0;
             dailyClaims = 0;
             skipAnimationUses = 0;
             totalStonesSpent = 0;
             maxConstellationPoints = 0;
+            noSsrStreak = 0;
+            pullsInPuddingMode = 0;
             achievements = getInitialAchievements();
         }
 
         function resetGame() {
             localStorage.removeItem('gachaSimSaveData');
+            // 'hasResetOnce' is intentionally not cleared
             initializeNewGame();
             dom.claimDailyBtn.disabled = false;
             dom.claimDailyBtn.textContent = '每日領取';
@@ -711,7 +851,11 @@
         }
 
         function saveData() {
-            const gameState = { pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, ssrPityTriggered, fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints };
+            const gameState = { 
+                pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, 
+                lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, 
+                fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints, noSsrStreak, pullsInPuddingMode
+            };
             localStorage.setItem('gachaSimSaveData', JSON.stringify(gameState));
         }
         function loadData() {
@@ -729,12 +873,16 @@
                 luckCalculations = gameState.luckCalculations || 0;
                 fragmentClaims = gameState.fragmentClaims || 0;
                 historyViews = gameState.historyViews || 0;
+                infoViews = gameState.infoViews || 0;
                 ssrPityTriggered = gameState.ssrPityTriggered || false;
                 fragmentSummons = gameState.fragmentSummons || 0;
                 dailyClaims = gameState.dailyClaims || 0;
                 skipAnimationUses = gameState.skipAnimationUses || 0;
                 totalStonesSpent = gameState.totalStonesSpent || 0;
                 maxConstellationPoints = gameState.maxConstellationPoints || 0;
+                noSsrStreak = gameState.noSsrStreak || 0;
+                pullsInPuddingMode = gameState.pullsInPuddingMode || 0;
+
                 if(gameState.lastDailyClaim === new Date().toDateString()) {
                     dom.claimDailyBtn.disabled = true;
                     dom.claimDailyBtn.textContent = '已領取';
