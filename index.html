@@ -95,6 +95,7 @@
             <button id="collection-btn" class="text-slate-400 hover:text-white transition-colors" title="圖鑑"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg></button>
             <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
             <button id="achievement-btn" class="relative text-slate-400 hover:text-white transition-colors" title="成就"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 7.152l-4.242.618c-1.634.238-2.29 2.242-1.088 3.422l3.07 2.99- .724 4.225c-.28 1.625 1.423 2.863 2.914 2.153L10 17.677l3.77 1.982c1.49.71 3.192-.528 2.912-2.153l-.724-4.225 3.07-2.99c1.202-1.18 1.546-3.184-1.088-3.422L12 7.152l-.51-4.002z" clip-rule="evenodd" /></svg><div id="achievement-red-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900 hidden"></div></button>
+            <button id="expedition-btn" class="text-slate-400 hover:text-white transition-colors" title="星際遠征"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
             <button id="reset-btn" class="text-slate-400 hover:text-white transition-colors" title="重置遊戲"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 110 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg></button>
         </div>
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
@@ -141,6 +142,8 @@
     <div id="luck-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 text-center"><button id="close-luck-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button><h2 class="text-2xl font-bold text-center mb-4 text-cyan-300">本日運勢</h2><div id="luck-modal-body" class="space-y-2"></div></div></div>
     <div id="achievement-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 800px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">成就殿堂</h2><button id="claim-all-achievements-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">一鍵領取</button><button id="close-achievement-modal-btn" class="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="achievement-modal-body" class="flex-grow min-h-0 flex flex-col"></div></div></div>
     <div id="reset-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-red-500 text-center"><h2 class="text-2xl font-bold text-center mb-4 text-red-400">重置遊戲</h2><p class="text-slate-300 mb-6">您確定要重置所有遊戲進度嗎？<br>這個操作無法復原！</p><div class="flex justify-center space-x-4"><button id="cancel-reset-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">取消</button><button id="confirm-reset-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">確定重置</button></div></div></div>
+    <div id="expedition-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 700px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">星際遠征</h2><button id="close-expedition-modal-btn" class="text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="expedition-slots-container" class="space-y-4 overflow-y-auto"></div></div></div>
+    <div id="dispatch-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[60] hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 800px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">派遣隊伍</h2><button id="close-dispatch-modal-btn" class="text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div class="flex-grow min-h-0 flex flex-col md:flex-row gap-4"><div id="dispatch-expedition-list" class="flex-shrink-0 md:w-1/3 space-y-2 overflow-y-auto pr-2"></div><div class="flex-grow min-h-0 flex flex-col"><div id="dispatch-expedition-details" class="mb-4 p-4 bg-slate-900/50 rounded-lg flex-shrink-0"></div><div class="flex items-center justify-between mb-2 flex-shrink-0"><h3 class="text-lg font-bold text-white">選擇角色 (<span id="dispatch-team-count">0</span>/3)</h3><div id="dispatch-team-power" class="text-lg font-bold">總戰力: 0</div></div><div id="dispatch-character-grid" class="flex-grow overflow-y-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 p-2 bg-slate-900/50 rounded-lg"></div><button id="confirm-dispatch-btn" class="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">確認派遣</button></div></div></div></div>
 
     <script>
         // --- 資料設定 ---
@@ -161,9 +164,15 @@
         const CONSTELLATION_ADJECTIVES = ['沉睡的', '閃耀的', '悲傷的', '喜悅的', '流浪的', '守護的', '低語的', '燃燒的', '無垠的', '詠唱的', '破碎的', '永恆的', '遺忘的', '呢喃的'];
         const CONSTELLATION_NOUNS = ['獨角獸', '獵戶', '狂蟹', '鳳凰', '天馬', '豎琴', '羅盤', '時鐘', '鑰匙', '王冠', '方尖碑', '沙漏', '迷宮', '世界樹'];
         const TOTAL_CHARACTER_COUNT = Object.values(CHARACTERS).reduce((sum, rarity) => sum + rarity.characters.length, 0);
+        const EXPEDITIONS_DATA = {
+            'stream': { name: '星塵的溪流', duration: 30 * 60, power_req: 5, rewards: { stones: 0, fragments: 100 }, bonus_multiplier: 1.2 },
+            'ruins': { name: '失落的遺跡', duration: 2 * 60 * 60, power_req: 10, rewards: { stones: 100, fragments: 50 }, bonus_multiplier: 1.5 },
+            'vortex': { name: '混沌的漩渦', duration: 8 * 60 * 60, power_req: 30, rewards: { stones: 500, fragments: 200 }, bonus_multiplier: 2.5 }
+        };
+        const POWER_LEVELS = { N: 1, R: 2, SR: 5, SSR: 10, UR: 20, UUR: 50 };
 
         // --- 狀態管理 ---
-        let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements;
+        let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots;
         let luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints;
         let noSsrStreak, pullsInPuddingMode;
         let isDrawingAnimation = false;
@@ -174,6 +183,8 @@
         let fragmentClaimTimer = 30;
         let fragmentClaimIntervalId = null;
         let rapidClickCount = 0, rapidClickTimerId = null, isRapidClickOnCooldown = false, rapidClickCooldownTimer = 60, lastTapArea = null;
+        let currentDispatchSlotIndex = -1, selectedExpeditionId = '', selectedTeam = [];
+
 
         // --- DOM 元素 ---
         const dom = {
@@ -188,6 +199,8 @@
             achievementBtn: document.getElementById('achievement-btn'), achievementModal: document.getElementById('achievement-modal'), closeAchievementModalBtn: document.getElementById('close-achievement-modal-btn'), achievementModalBody: document.getElementById('achievement-modal-body'), achievementRedDot: document.getElementById('achievement-red-dot'),
             claimAllAchievementsBtn: document.getElementById('claim-all-achievements-btn'),
             resetBtn: document.getElementById('reset-btn'), resetModal: document.getElementById('reset-modal'), confirmResetBtn: document.getElementById('confirm-reset-btn'), cancelResetBtn: document.getElementById('cancel-reset-btn'),
+            expeditionBtn: document.getElementById('expedition-btn'), expeditionModal: document.getElementById('expedition-modal'), closeExpeditionModalBtn: document.getElementById('close-expedition-modal-btn'), expeditionSlotsContainer: document.getElementById('expedition-slots-container'),
+            dispatchModal: document.getElementById('dispatch-modal'), closeDispatchModalBtn: document.getElementById('close-dispatch-modal-btn'), dispatchExpeditionList: document.getElementById('dispatch-expedition-list'), dispatchExpeditionDetails: document.getElementById('dispatch-expedition-details'), dispatchTeamCount: document.getElementById('dispatch-team-count'), dispatchTeamPower: document.getElementById('dispatch-team-power'), dispatchCharacterGrid: document.getElementById('dispatch-character-grid'), confirmDispatchBtn: document.getElementById('confirm-dispatch-btn'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'), 
             rapidClickContainer: document.getElementById('rapid-click-container'), rapidClickText: document.getElementById('rapid-click-text'), rapidTapLeftBtn: document.getElementById('rapid-tap-left-btn'), rapidTapRightBtn: document.getElementById('rapid-tap-right-btn'),
@@ -644,6 +657,11 @@
             dom.closeLuckModalBtn.addEventListener('click', () => dom.luckModal.classList.add('hidden'));
             dom.achievementBtn.addEventListener('click', () => { populateAchievementModal(); dom.achievementModal.classList.remove('hidden'); });
             dom.closeAchievementModalBtn.addEventListener('click', () => dom.achievementModal.classList.add('hidden'));
+            dom.expeditionBtn.addEventListener('click', () => { populateExpeditionModal(); dom.expeditionModal.classList.remove('hidden'); });
+            dom.closeExpeditionModalBtn.addEventListener('click', () => dom.expeditionModal.classList.add('hidden'));
+            dom.closeDispatchModalBtn.addEventListener('click', () => dom.dispatchModal.classList.add('hidden'));
+            dom.confirmDispatchBtn.addEventListener('click', startExpedition);
+
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { skipAnimationUses++; checkAchievements(); saveData(); cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
             dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; fragmentClaims++; updateAllUI(); startFragmentTimer(); checkAchievements(); saveData(); });
         
@@ -739,6 +757,221 @@
             }, 1000);
         }
 
+        // --- 遠征系統 ---
+        function getCharacterPower(char) {
+            if (!char) return 0;
+            return (POWER_LEVELS[char.rarity] || 0) * char.stars;
+        }
+
+        function formatDuration(seconds) {
+            if (seconds < 0) seconds = 0;
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function updateExpeditionTimers() {
+            expeditionSlots.forEach((slot, index) => {
+                if (slot.status === 'active') {
+                    const now = Date.now();
+                    const endTime = slot.endTime;
+                    const remaining = Math.max(0, (endTime - now) / 1000);
+                    const timerEl = document.querySelector(`#expedition-timer-${index}`);
+                    if (timerEl) {
+                        timerEl.textContent = formatDuration(remaining);
+                    }
+                    if (remaining === 0) {
+                        slot.status = 'completed';
+                        populateExpeditionModal(); // Re-render to show claim button
+                        saveData();
+                    }
+                }
+            });
+        }
+        
+        function populateExpeditionModal() {
+            dom.expeditionSlotsContainer.innerHTML = '';
+            expeditionSlots.forEach((slot, index) => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'p-4 bg-slate-700/50 rounded-lg flex items-center justify-between';
+
+                if (slot.status === 'idle') {
+                    slotDiv.innerHTML = `
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-300">隊伍 ${index + 1} - 空閒</h3>
+                            <p class="text-slate-400">選擇一個遠征任務來派遣你的隊伍。</p>
+                        </div>
+                        <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-5 rounded-lg" onclick="openDispatchModal(${index})">派遣</button>
+                    `;
+                } else if (slot.status === 'active') {
+                    const expeditionData = EXPEDITIONS_DATA[slot.expeditionId];
+                    slotDiv.innerHTML = `
+                        <div>
+                            <h3 class="text-xl font-bold text-yellow-300">${expeditionData.name} - 進行中</h3>
+                            <p class="text-slate-400">隊伍 ${index + 1} 正在遠征... </p>
+                            <div class="text-2xl font-bold mt-2 text-cyan-400" id="expedition-timer-${index}">${formatDuration((slot.endTime - Date.now())/1000)}</div>
+                        </div>
+                        <div class="text-right">
+                           <p class="font-bold">隊伍戰力: ${slot.teamPower}</p>
+                           <p class="text-sm text-slate-400">預計獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}</p>
+                        </div>
+                    `;
+                } else if (slot.status === 'completed') {
+                    const expeditionData = EXPEDITIONS_DATA[slot.expeditionId];
+                     slotDiv.innerHTML = `
+                        <div>
+                            <h3 class="text-xl font-bold text-green-400">${expeditionData.name} - 已完成</h3>
+                            <p class="text-slate-300">獲得獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}</p>
+                        </div>
+                        <button class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-5 rounded-lg" onclick="claimExpedition(${index})">領取</button>
+                    `;
+                }
+
+                dom.expeditionSlotsContainer.appendChild(slotDiv);
+            });
+        }
+
+        function openDispatchModal(slotIndex) {
+            currentDispatchSlotIndex = slotIndex;
+            selectedTeam = [];
+            populateDispatchModal();
+            dom.dispatchModal.classList.remove('hidden');
+        }
+        
+        function populateDispatchModal() {
+            dom.dispatchExpeditionList.innerHTML = '';
+            Object.keys(EXPEDITIONS_DATA).forEach((key, index) => {
+                const data = EXPEDITIONS_DATA[key];
+                const button = document.createElement('button');
+                button.className = `w-full text-left p-3 rounded-lg transition-colors ${index === 0 ? 'bg-slate-700' : 'bg-slate-900/50 hover:bg-slate-700'}`;
+                button.dataset.expeditionId = key;
+                button.innerHTML = `<h4 class="font-bold text-lg">${data.name}</h4><p class="text-sm text-slate-400">${data.duration/60} 分鐘 | 建議戰力: ${data.power_req}</p>`;
+                button.onclick = () => {
+                    dom.dispatchExpeditionList.querySelectorAll('button').forEach(btn => btn.classList.remove('bg-slate-700'));
+                    button.classList.add('bg-slate-700');
+                    selectExpeditionForDispatch(key);
+                };
+                dom.dispatchExpeditionList.appendChild(button);
+            });
+            selectExpeditionForDispatch(Object.keys(EXPEDITIONS_DATA)[0]); // Select first one by default
+            populateDispatchCharacterGrid();
+            updateDispatchTeamUI();
+        }
+
+        function selectExpeditionForDispatch(expeditionId) {
+            selectedExpeditionId = expeditionId;
+            const data = EXPEDITIONS_DATA[expeditionId];
+            dom.dispatchExpeditionDetails.innerHTML = `
+                <h3 class="text-xl font-bold text-yellow-300">${data.name}</h3>
+                <p class="text-slate-400">持續時間: ${data.duration/3600 > 0 ? `${data.duration/3600} 小時` : `${data.duration/60} 分鐘`}</p>
+                <p class="text-slate-400">基本獎勵: 💎${data.rewards.stones}, ✨${data.rewards.fragments}</p>
+                <p class="text-slate-400">戰力越高，額外獎勵越多！</p>
+            `;
+        }
+        
+        function populateDispatchCharacterGrid() {
+            dom.dispatchCharacterGrid.innerHTML = '';
+            const charactersOnExpedition = expeditionSlots.flatMap(slot => slot.team || []);
+            const sortedCollection = Object.values(characterCollection).sort((a,b) => getCharacterPower(b) - getCharacterPower(a));
+
+            if (sortedCollection.length === 0) {
+                 dom.dispatchCharacterGrid.innerHTML = '<p class="col-span-full text-center text-slate-400">沒有可派遣的角色。</p>';
+                 return;
+            }
+
+            sortedCollection.forEach(char => {
+                const charIdentifier = char.id || char.name;
+                const card = document.createElement('div');
+                const isSelected = selectedTeam.includes(charIdentifier);
+                const isOnAnotherMission = charactersOnExpedition.includes(charIdentifier);
+                
+                card.className = `p-2 rounded-lg text-center transition-all duration-200 cursor-pointer rarity-${char.rarity.toLowerCase()} ${isSelected ? 'ring-2 ring-cyan-400' : ''} ${isOnAnotherMission ? 'opacity-30 cursor-not-allowed' : 'hover:scale-105'}`;
+                card.dataset.charId = charIdentifier;
+                
+                const maxStars = CHARACTERS[char.rarity].maxStars;
+                const starDisplay = `<div class="star-rating text-xs">${'★'.repeat(char.stars)}${'☆'.repeat(maxStars - char.stars)}</div>`;
+                card.innerHTML = `<p class="font-bold text-sm truncate">${char.name}</p>${starDisplay}<p class="text-xs">戰力: ${getCharacterPower(char)}</p>`;
+                
+                if (isOnAnotherMission) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm';
+                    overlay.textContent = '遠征中';
+                    card.classList.add('relative');
+                    card.appendChild(overlay);
+                } else {
+                    card.onclick = () => selectCharacterForDispatch(charIdentifier, card);
+                }
+                dom.dispatchCharacterGrid.appendChild(card);
+            });
+        }
+
+        function selectCharacterForDispatch(charIdentifier, cardElement) {
+            const index = selectedTeam.indexOf(charIdentifier);
+            if (index > -1) {
+                selectedTeam.splice(index, 1);
+                cardElement.classList.remove('ring-2', 'ring-cyan-400');
+            } else {
+                if (selectedTeam.length < 3) {
+                    selectedTeam.push(charIdentifier);
+                    cardElement.classList.add('ring-2', 'ring-cyan-400');
+                }
+            }
+            updateDispatchTeamUI();
+        }
+
+        function updateDispatchTeamUI() {
+            dom.dispatchTeamCount.textContent = selectedTeam.length;
+            const totalPower = selectedTeam.reduce((sum, charId) => {
+                const char = characterCollection[charId];
+                return sum + getCharacterPower(char);
+            }, 0);
+            dom.dispatchTeamPower.textContent = `總戰力: ${totalPower}`;
+            dom.confirmDispatchBtn.disabled = selectedTeam.length === 0;
+        }
+
+        function startExpedition() {
+            if (selectedTeam.length === 0 || !selectedExpeditionId) return;
+
+            const totalPower = selectedTeam.reduce((sum, charId) => {
+                const char = characterCollection[charId];
+                return sum + getCharacterPower(char);
+            }, 0);
+            
+            const expeditionData = EXPEDITIONS_DATA[selectedExpeditionId];
+            const powerRatio = Math.max(0.5, totalPower / expeditionData.power_req);
+            const bonus = (powerRatio - 1) * expeditionData.bonus_multiplier;
+            const finalStones = Math.floor(expeditionData.rewards.stones * (1 + bonus));
+            const finalFragments = Math.floor(expeditionData.rewards.fragments * (1 + bonus));
+
+            expeditionSlots[currentDispatchSlotIndex] = {
+                status: 'active',
+                expeditionId: selectedExpeditionId,
+                team: [...selectedTeam],
+                teamPower: totalPower,
+                startTime: Date.now(),
+                endTime: Date.now() + expeditionData.duration * 1000,
+                rewards: { stones: finalStones, fragments: finalFragments }
+            };
+
+            dom.dispatchModal.classList.add('hidden');
+            populateExpeditionModal();
+            saveData();
+        }
+
+        function claimExpedition(slotIndex) {
+            const slot = expeditionSlots[slotIndex];
+            if (slot.status === 'completed') {
+                stardustStones += slot.rewards.stones;
+                fragments += slot.rewards.fragments;
+                showToast(`遠征獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}`);
+                expeditionSlots[slotIndex] = { status: 'idle' };
+                populateExpeditionModal();
+                updateAllUI();
+                saveData();
+            }
+        }
+        
         // --- 資料存檔與重置 ---
         function getInitialAchievements() {
             return {
@@ -833,6 +1066,7 @@
             maxConstellationPoints = 0;
             noSsrStreak = 0;
             pullsInPuddingMode = 0;
+            expeditionSlots = [{ status: 'idle' }, { status: 'idle' }, { status: 'idle' }];
             achievements = getInitialAchievements();
         }
 
@@ -852,7 +1086,7 @@
 
         function saveData() {
             const gameState = { 
-                pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, 
+                pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots,
                 lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, 
                 fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints, noSsrStreak, pullsInPuddingMode
             };
@@ -870,6 +1104,7 @@
                 stardustStones = gameState.stardustStones;
                 fragments = gameState.fragments;
                 achievements = { ...getInitialAchievements(), ...gameState.achievements };
+                expeditionSlots = gameState.expeditionSlots || [{ status: 'idle' }, { status: 'idle' }, { status: 'idle' }];
                 luckCalculations = gameState.luckCalculations || 0;
                 fragmentClaims = gameState.fragmentClaims || 0;
                 historyViews = gameState.historyViews || 0;
@@ -904,6 +1139,7 @@
             setDate(); 
             startFragmentTimer();
             checkAchievements();
+            setInterval(updateExpeditionTimers, 1000);
         }
         init();
     </script>
