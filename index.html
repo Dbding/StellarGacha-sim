@@ -90,12 +90,13 @@
     <div id="rarity-flash-overlay" class="fixed inset-0 z-[100] pointer-events-none opacity-0"></div>
 
     <div id="main-container" class="relative w-full max-w-4xl mx-auto bg-slate-900/50 rounded-2xl shadow-2xl p-4 sm:p-6 border border-slate-700 transition-transform duration-500">
-        <div class="absolute top-4 left-6 flex items-center space-x-4 z-10">
+        <div class="absolute top-4 left-6 flex items-center space-x-2 sm:space-x-4 z-10">
             <p class="text-lg sm:text-xl font-bold text-white/70 select-none">作者：盯布丁</p>
             <button id="collection-btn" class="text-slate-400 hover:text-white transition-colors" title="圖鑑"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 0114.5 16c1.255 0 2.443-.29 3.5-.804v-10A7.968 7.968 0 0014.5 4z" /></svg></button>
             <button id="history-btn" class="text-slate-400 hover:text-white transition-colors" title="召喚歷史"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg></button>
             <button id="achievement-btn" class="relative text-slate-400 hover:text-white transition-colors" title="成就"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 7.152l-4.242.618c-1.634.238-2.29 2.242-1.088 3.422l3.07 2.99- .724 4.225c-.28 1.625 1.423 2.863 2.914 2.153L10 17.677l3.77 1.982c1.49.71 3.192-.528 2.912-2.153l-.724-4.225 3.07-2.99c1.202-1.18 1.546-3.184-1.088-3.422L12 7.152l-.51-4.002z" clip-rule="evenodd" /></svg><div id="achievement-red-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900 hidden"></div></button>
             <button id="expedition-btn" class="text-slate-400 hover:text-white transition-colors" title="星際遠征"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
+            <button id="tower-btn" class="text-slate-400 hover:text-white transition-colors" title="星辰之塔"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v14H5a1 1 0 01-1-1V3a1 1 0 011-1zm5 0a1 1 0 011 1v14h-2V3a1 1 0 011-1zm5 0a1 1 0 011 1v14h-2V3a1 1 0 011-1z" clip-rule="evenodd" /></svg></button>
             <button id="reset-btn" class="text-slate-400 hover:text-white transition-colors" title="重置遊戲"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 110 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" /></svg></button>
         </div>
         <div class="absolute top-4 right-4 flex items-center space-x-3 z-10">
@@ -144,6 +145,7 @@
     <div id="reset-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-red-500 text-center"><h2 class="text-2xl font-bold text-center mb-4 text-red-400">重置遊戲</h2><p class="text-slate-300 mb-6">您確定要重置所有遊戲進度嗎？<br>這個操作無法復原！</p><div class="flex justify-center space-x-4"><button id="cancel-reset-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">取消</button><button id="confirm-reset-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">確定重置</button></div></div></div>
     <div id="expedition-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-3xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 700px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">星際遠征</h2><button id="close-expedition-modal-btn" class="text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="expedition-slots-container" class="space-y-4 overflow-y-auto"></div></div></div>
     <div id="dispatch-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[60] hidden"><div class="w-full max-w-4xl bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col" style="height: 90vh; max-height: 800px;"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">派遣隊伍</h2><button id="close-dispatch-modal-btn" class="text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div class="flex-grow min-h-0 flex flex-col md:flex-row gap-4"><div id="dispatch-expedition-list" class="flex-shrink-0 md:w-1/3 space-y-2 overflow-y-auto pr-2"></div><div class="flex-grow min-h-0 flex flex-col"><div id="dispatch-expedition-details" class="mb-4 p-4 bg-slate-900/50 rounded-lg flex-shrink-0"></div><div class="flex items-center justify-between mb-2 flex-shrink-0"><h3 class="text-lg font-bold text-white">選擇角色 (<span id="dispatch-team-count">0</span>/3)</h3><div id="dispatch-team-power" class="text-lg font-bold">總戰力: 0</div></div><div id="dispatch-character-grid" class="flex-grow overflow-y-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 p-2 bg-slate-900/50 rounded-lg"></div><button id="confirm-dispatch-btn" class="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">確認派遣</button></div></div></div></div>
+    <div id="tower-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden"><div class="w-full max-w-md bg-slate-800 rounded-lg shadow-lg p-6 relative border border-slate-600 flex flex-col text-center"><div class="flex items-center justify-between mb-4 flex-shrink-0"><h2 class="text-2xl font-bold text-cyan-300">星辰之塔</h2><button id="close-tower-modal-btn" class="text-slate-400 hover:text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="tower-content" class="flex-grow"></div><button id="tower-challenge-btn" class="mt-4 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">挑戰</button></div></div>
 
     <script>
         // --- 資料設定 ---
@@ -172,7 +174,7 @@
         const POWER_LEVELS = { N: 1, R: 2, SR: 5, SSR: 10, UR: 20, UUR: 50 };
 
         // --- 狀態管理 ---
-        let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots;
+        let pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots, towerLevel;
         let luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints;
         let noSsrStreak, pullsInPuddingMode;
         let isDrawingAnimation = false;
@@ -201,6 +203,7 @@
             resetBtn: document.getElementById('reset-btn'), resetModal: document.getElementById('reset-modal'), confirmResetBtn: document.getElementById('confirm-reset-btn'), cancelResetBtn: document.getElementById('cancel-reset-btn'),
             expeditionBtn: document.getElementById('expedition-btn'), expeditionModal: document.getElementById('expedition-modal'), closeExpeditionModalBtn: document.getElementById('close-expedition-modal-btn'), expeditionSlotsContainer: document.getElementById('expedition-slots-container'),
             dispatchModal: document.getElementById('dispatch-modal'), closeDispatchModalBtn: document.getElementById('close-dispatch-modal-btn'), dispatchExpeditionList: document.getElementById('dispatch-expedition-list'), dispatchExpeditionDetails: document.getElementById('dispatch-expedition-details'), dispatchTeamCount: document.getElementById('dispatch-team-count'), dispatchTeamPower: document.getElementById('dispatch-team-power'), dispatchCharacterGrid: document.getElementById('dispatch-character-grid'), confirmDispatchBtn: document.getElementById('confirm-dispatch-btn'),
+            towerBtn: document.getElementById('tower-btn'), towerModal: document.getElementById('tower-modal'), closeTowerModalBtn: document.getElementById('close-tower-modal-btn'), towerContent: document.getElementById('tower-content'), towerChallengeBtn: document.getElementById('tower-challenge-btn'),
             stardustStonesCounter: document.getElementById('stardust-stones-counter'), fragmentsCounter: document.getElementById('fragments-counter'),
             claimDailyBtn: document.getElementById('claim-daily-btn'), claimFragmentBtn: document.getElementById('claim-fragment-btn'), 
             rapidClickContainer: document.getElementById('rapid-click-container'), rapidClickText: document.getElementById('rapid-click-text'), rapidTapLeftBtn: document.getElementById('rapid-tap-left-btn'), rapidTapRightBtn: document.getElementById('rapid-tap-right-btn'),
@@ -439,7 +442,7 @@
             const rarityOrder = ['N', 'R', 'SR', 'SSR', 'UR', 'UUR'];
             const todayRarityCounts = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0, UUR: 0 };
             todayPulls.forEach(pull => { todayRarityCounts[pull.rarity]++; if (rarityOrder.indexOf(pull.rarity) > rarityOrder.indexOf(highestRarity)) { highestRarity = pull.rarity; } });
-            const luckLevels = { UUR: { title: '大吉', color: 'text-rarity-uur', text: '雖然是最好的運氣，但同時也被認為之後的運勢會呈下降趨勢。 所以有幸抽到「大吉」的話，要注意努力維持現狀哟。' }, UR: { title: '吉', color: 'text-rarity-ur', text: '僅次於「大吉」的第二好的運勢。 沒有大吉那樣的運勢急劇下降的可能性，一段時間內可以放心。' }, SSR: { title: '中吉', color: 'text-rarity-ssr', text: '運氣是「吉」的一半。 根據個人努力今後可能運氣會上升。' }, SR: { title: '小吉', color: 'text-rarity-sr', text: '「中吉」和「末吉」之間的運勢，說不上好但也不算差。 據說只會有小小的幸福，但不宜過度追求。' }, R: { title: '末吉', color: 'text-rarity-r', text: '排在「吉」最後的運勢，是「吉」之中最差的。 但是也意味著有許多上升空間，可以期待今後的變化。' }, N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' } };
+            const luckLevels = { UUR: { title: '大吉', color: 'text-rarity-uur', text: '雖然是最好的運氣，但同時也被認為之後の運勢會呈下降趨勢。 所以有幸抽到「大吉」的話，要注意努力維持現狀哟。' }, UR: { title: '吉', color: 'text-rarity-ur', text: '僅次於「大吉」の第二好的運勢。 沒有大吉那樣の運勢急劇下降の可能性，一段時間內可以放心。' }, SSR: { title: '中吉', color: 'text-rarity-ssr', text: '運氣是「吉」の一半。 根據個人努力今後可能運氣會上升。' }, SR: { title: '小吉', color: 'text-rarity-sr', text: '「中吉」和「末吉」之間の運勢，說不上好但也不算差。 據說只會有小小的幸福，但不宜過度追求。' }, R: { title: '末吉', color: 'text-rarity-r', text: '排在「吉」最後の運勢，是「吉」之中最差の。 但是也意味著有許多上升空間，可以期待今後の變化。' }, N: { title: '凶', color: 'text-rarity-n', text: '運勢不好，但是也不一定絕對會發生壞事。 需要小心謹慎。 重新審視自身並加以改正，運勢會上升。' } };
             const loveRating = {UUR: 5, UR: 4, SSR: 3, SR: 2, R: 1, N: 1}[highestRarity];
             const workScore = todayRarityCounts.SR * 1 + todayRarityCounts.SSR * 3 + todayRarityCounts.UR * 5 + todayRarityCounts.UUR * 10;
             let workRating = 1; if (workScore > 30) workRating = 5; else if (workScore > 15) workRating = 4; else if (workScore > 5) workRating = 3; else if (workScore > 0) workRating = 2;
@@ -449,9 +452,10 @@
             dom.luckModalBody.innerHTML = `<p class="text-xl font-bold">今日你的運勢星座是：${constellationName}</p><p class="text-4xl font-bold ${luck.color} mt-4">${luck.title}</p><div class="text-left mt-4 space-y-1 text-yellow-300"><p>戀愛運：${generateStarRating(loveRating, 5)}</p><p>事業運：${generateStarRating(workRating, 5)}</p><p>金錢運：${generateStarRating(moneyRating, 5)}</p></div><p class="mt-4 text-slate-300 text-left">${luck.text}</p>`;
             dom.luckModal.classList.remove('hidden');
         }
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = 'fixed top-20 left-1/2 bg-green-500 text-white font-bold py-2 px-5 rounded-lg shadow-lg toast-notification z-[100]';
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `fixed top-20 left-1/2 ${bgColor} text-white font-bold py-2 px-5 rounded-lg shadow-lg toast-notification z-[100]`;
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 1900);
@@ -608,6 +612,228 @@
             dom.achievementModalBody.appendChild(contentContainer);
         }
         
+        // --- 遠征 & 爬塔系統 ---
+        function populateExpeditionModal() {
+            dom.expeditionSlotsContainer.innerHTML = '';
+            expeditionSlots.forEach((slot, index) => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'p-4 bg-slate-700/50 rounded-lg flex items-center justify-between';
+                if (slot.status === 'idle') {
+                    slotDiv.innerHTML = `<div class="text-slate-400">遠征隊伍 ${index + 1} (閒置中)</div>`;
+                    const dispatchBtn = document.createElement('button');
+                    dispatchBtn.textContent = '派遣';
+                    dispatchBtn.className = 'bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg';
+                    dispatchBtn.onclick = () => openDispatchModal(index);
+                    slotDiv.appendChild(dispatchBtn);
+                } else { // 'active'
+                    const expedition = EXPEDITIONS_DATA[slot.expeditionId];
+                    const endTime = slot.startTime + expedition.duration * 1000;
+                    const remainingTime = Math.max(0, endTime - Date.now());
+                    if (remainingTime > 0) {
+                        slotDiv.innerHTML = `<div><h4 class="font-bold text-lg text-yellow-300">${expedition.name}</h4><p class="text-sm text-slate-300">剩餘時間: <span class="expedition-timer" data-end-time="${endTime}">${formatTime(remainingTime)}</span></p></div>`;
+                    } else {
+                        slotDiv.innerHTML = `<div><h4 class="font-bold text-lg text-green-400">${expedition.name} (已完成)</h4></div>`;
+                        const claimBtn = document.createElement('button');
+                        claimBtn.textContent = '領取獎勵';
+                        claimBtn.className = 'bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg';
+                        claimBtn.onclick = () => claimExpeditionReward(index);
+                        slotDiv.appendChild(claimBtn);
+                    }
+                }
+                dom.expeditionSlotsContainer.appendChild(slotDiv);
+            });
+        }
+        
+        function openDispatchModal(slotIndex) {
+            currentDispatchSlotIndex = slotIndex;
+            selectedTeam = [];
+            selectedExpeditionId = '';
+            dom.dispatchModal.classList.remove('hidden');
+            populateDispatchExpeditionList();
+            populateDispatchCharacterGrid();
+            updateDispatchDetails();
+            dom.confirmDispatchBtn.disabled = true;
+        }
+
+        function populateDispatchExpeditionList() {
+            dom.dispatchExpeditionList.innerHTML = '';
+            Object.keys(EXPEDITIONS_DATA).forEach(id => {
+                const expedition = EXPEDITIONS_DATA[id];
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-3 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors';
+                btn.innerHTML = `<h4 class="font-bold text-white">${expedition.name}</h4><p class="text-sm text-slate-400">時長: ${formatTime(expedition.duration * 1000, true)} | 戰力需求: ${expedition.power_req}</p>`;
+                btn.onclick = () => {
+                    selectedExpeditionId = id;
+                    updateDispatchDetails();
+                    // Style the selected button
+                    dom.dispatchExpeditionList.querySelectorAll('button').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400'));
+                    btn.classList.add('ring-2', 'ring-cyan-400');
+                };
+                dom.dispatchExpeditionList.appendChild(btn);
+            });
+        }
+        
+        function updateDispatchDetails() {
+            if (!selectedExpeditionId) {
+                dom.dispatchExpeditionDetails.innerHTML = '<p class="text-slate-400">請選擇一個遠征任務</p>';
+                return;
+            }
+            const expedition = EXPEDITIONS_DATA[selectedExpeditionId];
+            dom.dispatchExpeditionDetails.innerHTML = `<h3 class="text-xl font-bold text-yellow-300">${expedition.name}</h3><p>獎勵: 💎 ${expedition.rewards.stones}, ✨ ${expedition.rewards.fragments}</p><p>戰力需求: ${expedition.power_req}</p>`;
+            updateConfirmDispatchButton();
+        }
+
+        function populateDispatchCharacterGrid() {
+            dom.dispatchCharacterGrid.innerHTML = '';
+            const allCharacters = Object.values(characterCollection).sort((a,b) => {
+                const powerA = POWER_LEVELS[a.rarity] * a.stars;
+                const powerB = POWER_LEVELS[b.rarity] * b.stars;
+                return powerB - powerA;
+            });
+
+            if (allCharacters.length === 0) {
+                 dom.dispatchCharacterGrid.innerHTML = '<p class="text-slate-400 col-span-full text-center">沒有可派遣的角色。</p>';
+                 return;
+            }
+
+            allCharacters.forEach(char => {
+                const charIdentifier = char.id || char.name;
+                const card = document.createElement('div');
+                card.className = `p-2 rounded-lg text-center cursor-pointer border-2 border-transparent rarity-${char.rarity.toLowerCase()}`;
+                card.innerHTML = `<p class="font-bold text-sm truncate">${char.name}</p><p class="text-xs">${generateStarRating(char.stars, CHARACTERS[char.rarity].maxStars)}</p>`;
+                card.onclick = () => handleCharacterSelectionForDispatch(charIdentifier, card);
+                dom.dispatchCharacterGrid.appendChild(card);
+            });
+        }
+        
+        function handleCharacterSelectionForDispatch(charIdentifier, cardElement) {
+            const index = selectedTeam.indexOf(charIdentifier);
+            if (index > -1) {
+                selectedTeam.splice(index, 1);
+                cardElement.classList.remove('ring-2', 'ring-green-400');
+            } else if (selectedTeam.length < 3) {
+                selectedTeam.push(charIdentifier);
+                cardElement.classList.add('ring-2', 'ring-green-400');
+            }
+            const teamPower = calculateTeamPower(selectedTeam);
+            dom.dispatchTeamCount.textContent = selectedTeam.length;
+            dom.dispatchTeamPower.textContent = `總戰力: ${teamPower}`;
+            updateConfirmDispatchButton();
+        }
+
+        function calculateTeamPower(team) {
+            return team.reduce((total, charId) => {
+                const char = characterCollection[charId];
+                return total + (POWER_LEVELS[char.rarity] * char.stars);
+            }, 0);
+        }
+
+        function updateConfirmDispatchButton() {
+            const teamPower = calculateTeamPower(selectedTeam);
+            const expedition = EXPEDITIONS_DATA[selectedExpeditionId];
+            const isReady = selectedExpeditionId && selectedTeam.length > 0 && expedition && teamPower >= expedition.power_req;
+            dom.confirmDispatchBtn.disabled = !isReady;
+        }
+
+        function startExpedition() {
+            if (currentDispatchSlotIndex === -1 || !selectedExpeditionId || selectedTeam.length === 0) return;
+            expeditionSlots[currentDispatchSlotIndex] = {
+                status: 'active',
+                expeditionId: selectedExpeditionId,
+                team: [...selectedTeam],
+                startTime: Date.now()
+            };
+            saveData();
+            dom.dispatchModal.classList.add('hidden');
+            populateExpeditionModal();
+        }
+
+        function updateExpeditionTimers() {
+            document.querySelectorAll('.expedition-timer').forEach(timerEl => {
+                const endTime = parseInt(timerEl.dataset.endTime, 10);
+                const remaining = Math.max(0, endTime - Date.now());
+                timerEl.textContent = formatTime(remaining);
+                if (remaining === 0 && !timerEl.closest('.p-4').querySelector('button')) {
+                    // Timer finished, refresh the modal to show the claim button
+                    populateExpeditionModal();
+                }
+            });
+        }
+
+        function claimExpeditionReward(slotIndex) {
+            const slot = expeditionSlots[slotIndex];
+            if (!slot || slot.status !== 'active') return;
+
+            const expedition = EXPEDITIONS_DATA[slot.expeditionId];
+            const teamPower = calculateTeamPower(slot.team);
+            const bonus = (teamPower / expedition.power_req - 1) * expedition.bonus_multiplier;
+            const finalBonus = Math.min(1, Math.max(0, bonus)); // Clamp bonus between 0% and 100%
+
+            const stonesReward = Math.floor(expedition.rewards.stones * (1 + finalBonus));
+            const fragmentsReward = Math.floor(expedition.rewards.fragments * (1 + finalBonus));
+            
+            stardustStones += stonesReward;
+            fragments += fragmentsReward;
+            
+            showToast(`獲得 💎${stonesReward} ✨${fragmentsReward} (加成 ${(finalBonus * 100).toFixed(0)}%)`);
+
+            expeditionSlots[slotIndex] = { status: 'idle' };
+            saveData();
+            updateAllUI();
+            populateExpeditionModal();
+        }
+        
+        function populateTowerModal() {
+            const totalPower = calculateTeamPower(Object.keys(characterCollection));
+            const requiredPower = towerLevel * 10 + Math.pow(towerLevel, 2); // Example power scaling
+            const canChallenge = totalPower >= requiredPower;
+            const rewardStones = towerLevel * 20;
+            const rewardFragments = towerLevel * 10;
+            
+            dom.towerContent.innerHTML = `
+                <p class="text-3xl font-bold text-yellow-300 mb-4">第 ${towerLevel} 層</p>
+                <p class="mb-2">推薦總戰力: <span class="font-bold text-red-400">${requiredPower}</span></p>
+                <p class="mb-4">你的總戰力: <span class="font-bold ${canChallenge ? 'text-green-400' : 'text-slate-400'}">${totalPower}</span></p>
+                <p class="text-cyan-300">通關獎勵: 💎 ${rewardStones} / ✨ ${rewardFragments}</p>
+            `;
+            dom.towerChallengeBtn.disabled = !canChallenge;
+        }
+        
+        function challengeTower() {
+             const totalPower = calculateTeamPower(Object.keys(characterCollection));
+            const requiredPower = towerLevel * 10 + Math.pow(towerLevel, 2);
+            if (totalPower < requiredPower) {
+                showToast('戰力不足，無法挑戰！', 'error');
+                return;
+            }
+            
+            const rewardStones = towerLevel * 20;
+            const rewardFragments = towerLevel * 10;
+            stardustStones += rewardStones;
+            fragments += rewardFragments;
+            
+            showToast(`挑戰成功！獲得 💎${rewardStones} ✨${rewardFragments}`);
+            
+            towerLevel++;
+            saveData();
+            updateAllUI();
+            populateTowerModal();
+        }
+
+        function formatTime(ms, short = false) {
+            if (ms <= 0) return short ? '0s' : '00:00:00';
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            if (short) {
+                if (hours > 0) return `${hours}h ${minutes}m`;
+                if (minutes > 0) return `${minutes}m ${seconds}s`;
+                return `${seconds}s`;
+            }
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
         // --- 事件監聽 ---
         function setupEventListeners() {
             dom.draw1Btn.addEventListener('click', () => processDraw(1, 'main'));
@@ -661,6 +887,9 @@
             dom.closeExpeditionModalBtn.addEventListener('click', () => dom.expeditionModal.classList.add('hidden'));
             dom.closeDispatchModalBtn.addEventListener('click', () => dom.dispatchModal.classList.add('hidden'));
             dom.confirmDispatchBtn.addEventListener('click', startExpedition);
+            dom.towerBtn.addEventListener('click', () => { populateTowerModal(); dom.towerModal.classList.remove('hidden'); });
+            dom.closeTowerModalBtn.addEventListener('click', () => dom.towerModal.classList.add('hidden'));
+            dom.towerChallengeBtn.addEventListener('click', challengeTower);
 
             dom.skipAnimationBtn.addEventListener('click', () => { if (animationFrameId) { skipAnimationUses++; checkAchievements(); saveData(); cancelAnimationFrame(animationFrameId); animationFrameId = null; endAnimation(); } });
             dom.claimFragmentBtn.addEventListener('click', () => { fragments += 50; fragmentClaims++; updateAllUI(); startFragmentTimer(); checkAchievements(); saveData(); });
@@ -756,221 +985,6 @@
                 }
             }, 1000);
         }
-
-        // --- 遠征系統 ---
-        function getCharacterPower(char) {
-            if (!char) return 0;
-            return (POWER_LEVELS[char.rarity] || 0) * char.stars;
-        }
-
-        function formatDuration(seconds) {
-            if (seconds < 0) seconds = 0;
-            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-            return `${h}:${m}:${s}`;
-        }
-
-        function updateExpeditionTimers() {
-            expeditionSlots.forEach((slot, index) => {
-                if (slot.status === 'active') {
-                    const now = Date.now();
-                    const endTime = slot.endTime;
-                    const remaining = Math.max(0, (endTime - now) / 1000);
-                    const timerEl = document.querySelector(`#expedition-timer-${index}`);
-                    if (timerEl) {
-                        timerEl.textContent = formatDuration(remaining);
-                    }
-                    if (remaining === 0) {
-                        slot.status = 'completed';
-                        populateExpeditionModal(); // Re-render to show claim button
-                        saveData();
-                    }
-                }
-            });
-        }
-        
-        function populateExpeditionModal() {
-            dom.expeditionSlotsContainer.innerHTML = '';
-            expeditionSlots.forEach((slot, index) => {
-                const slotDiv = document.createElement('div');
-                slotDiv.className = 'p-4 bg-slate-700/50 rounded-lg flex items-center justify-between';
-
-                if (slot.status === 'idle') {
-                    slotDiv.innerHTML = `
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-300">隊伍 ${index + 1} - 空閒</h3>
-                            <p class="text-slate-400">選擇一個遠征任務來派遣你的隊伍。</p>
-                        </div>
-                        <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-5 rounded-lg" onclick="openDispatchModal(${index})">派遣</button>
-                    `;
-                } else if (slot.status === 'active') {
-                    const expeditionData = EXPEDITIONS_DATA[slot.expeditionId];
-                    slotDiv.innerHTML = `
-                        <div>
-                            <h3 class="text-xl font-bold text-yellow-300">${expeditionData.name} - 進行中</h3>
-                            <p class="text-slate-400">隊伍 ${index + 1} 正在遠征... </p>
-                            <div class="text-2xl font-bold mt-2 text-cyan-400" id="expedition-timer-${index}">${formatDuration((slot.endTime - Date.now())/1000)}</div>
-                        </div>
-                        <div class="text-right">
-                           <p class="font-bold">隊伍戰力: ${slot.teamPower}</p>
-                           <p class="text-sm text-slate-400">預計獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}</p>
-                        </div>
-                    `;
-                } else if (slot.status === 'completed') {
-                    const expeditionData = EXPEDITIONS_DATA[slot.expeditionId];
-                     slotDiv.innerHTML = `
-                        <div>
-                            <h3 class="text-xl font-bold text-green-400">${expeditionData.name} - 已完成</h3>
-                            <p class="text-slate-300">獲得獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}</p>
-                        </div>
-                        <button class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-5 rounded-lg" onclick="claimExpedition(${index})">領取</button>
-                    `;
-                }
-
-                dom.expeditionSlotsContainer.appendChild(slotDiv);
-            });
-        }
-
-        function openDispatchModal(slotIndex) {
-            currentDispatchSlotIndex = slotIndex;
-            selectedTeam = [];
-            populateDispatchModal();
-            dom.dispatchModal.classList.remove('hidden');
-        }
-        
-        function populateDispatchModal() {
-            dom.dispatchExpeditionList.innerHTML = '';
-            Object.keys(EXPEDITIONS_DATA).forEach((key, index) => {
-                const data = EXPEDITIONS_DATA[key];
-                const button = document.createElement('button');
-                button.className = `w-full text-left p-3 rounded-lg transition-colors ${index === 0 ? 'bg-slate-700' : 'bg-slate-900/50 hover:bg-slate-700'}`;
-                button.dataset.expeditionId = key;
-                button.innerHTML = `<h4 class="font-bold text-lg">${data.name}</h4><p class="text-sm text-slate-400">${data.duration/60} 分鐘 | 建議戰力: ${data.power_req}</p>`;
-                button.onclick = () => {
-                    dom.dispatchExpeditionList.querySelectorAll('button').forEach(btn => btn.classList.remove('bg-slate-700'));
-                    button.classList.add('bg-slate-700');
-                    selectExpeditionForDispatch(key);
-                };
-                dom.dispatchExpeditionList.appendChild(button);
-            });
-            selectExpeditionForDispatch(Object.keys(EXPEDITIONS_DATA)[0]); // Select first one by default
-            populateDispatchCharacterGrid();
-            updateDispatchTeamUI();
-        }
-
-        function selectExpeditionForDispatch(expeditionId) {
-            selectedExpeditionId = expeditionId;
-            const data = EXPEDITIONS_DATA[expeditionId];
-            dom.dispatchExpeditionDetails.innerHTML = `
-                <h3 class="text-xl font-bold text-yellow-300">${data.name}</h3>
-                <p class="text-slate-400">持續時間: ${data.duration/3600 > 0 ? `${data.duration/3600} 小時` : `${data.duration/60} 分鐘`}</p>
-                <p class="text-slate-400">基本獎勵: 💎${data.rewards.stones}, ✨${data.rewards.fragments}</p>
-                <p class="text-slate-400">戰力越高，額外獎勵越多！</p>
-            `;
-        }
-        
-        function populateDispatchCharacterGrid() {
-            dom.dispatchCharacterGrid.innerHTML = '';
-            const charactersOnExpedition = expeditionSlots.flatMap(slot => slot.team || []);
-            const sortedCollection = Object.values(characterCollection).sort((a,b) => getCharacterPower(b) - getCharacterPower(a));
-
-            if (sortedCollection.length === 0) {
-                 dom.dispatchCharacterGrid.innerHTML = '<p class="col-span-full text-center text-slate-400">沒有可派遣的角色。</p>';
-                 return;
-            }
-
-            sortedCollection.forEach(char => {
-                const charIdentifier = char.id || char.name;
-                const card = document.createElement('div');
-                const isSelected = selectedTeam.includes(charIdentifier);
-                const isOnAnotherMission = charactersOnExpedition.includes(charIdentifier);
-                
-                card.className = `p-2 rounded-lg text-center transition-all duration-200 cursor-pointer rarity-${char.rarity.toLowerCase()} ${isSelected ? 'ring-2 ring-cyan-400' : ''} ${isOnAnotherMission ? 'opacity-30 cursor-not-allowed' : 'hover:scale-105'}`;
-                card.dataset.charId = charIdentifier;
-                
-                const maxStars = CHARACTERS[char.rarity].maxStars;
-                const starDisplay = `<div class="star-rating text-xs">${'★'.repeat(char.stars)}${'☆'.repeat(maxStars - char.stars)}</div>`;
-                card.innerHTML = `<p class="font-bold text-sm truncate">${char.name}</p>${starDisplay}<p class="text-xs">戰力: ${getCharacterPower(char)}</p>`;
-                
-                if (isOnAnotherMission) {
-                    const overlay = document.createElement('div');
-                    overlay.className = 'absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm';
-                    overlay.textContent = '遠征中';
-                    card.classList.add('relative');
-                    card.appendChild(overlay);
-                } else {
-                    card.onclick = () => selectCharacterForDispatch(charIdentifier, card);
-                }
-                dom.dispatchCharacterGrid.appendChild(card);
-            });
-        }
-
-        function selectCharacterForDispatch(charIdentifier, cardElement) {
-            const index = selectedTeam.indexOf(charIdentifier);
-            if (index > -1) {
-                selectedTeam.splice(index, 1);
-                cardElement.classList.remove('ring-2', 'ring-cyan-400');
-            } else {
-                if (selectedTeam.length < 3) {
-                    selectedTeam.push(charIdentifier);
-                    cardElement.classList.add('ring-2', 'ring-cyan-400');
-                }
-            }
-            updateDispatchTeamUI();
-        }
-
-        function updateDispatchTeamUI() {
-            dom.dispatchTeamCount.textContent = selectedTeam.length;
-            const totalPower = selectedTeam.reduce((sum, charId) => {
-                const char = characterCollection[charId];
-                return sum + getCharacterPower(char);
-            }, 0);
-            dom.dispatchTeamPower.textContent = `總戰力: ${totalPower}`;
-            dom.confirmDispatchBtn.disabled = selectedTeam.length === 0;
-        }
-
-        function startExpedition() {
-            if (selectedTeam.length === 0 || !selectedExpeditionId) return;
-
-            const totalPower = selectedTeam.reduce((sum, charId) => {
-                const char = characterCollection[charId];
-                return sum + getCharacterPower(char);
-            }, 0);
-            
-            const expeditionData = EXPEDITIONS_DATA[selectedExpeditionId];
-            const powerRatio = Math.max(0.5, totalPower / expeditionData.power_req);
-            const bonus = (powerRatio - 1) * expeditionData.bonus_multiplier;
-            const finalStones = Math.floor(expeditionData.rewards.stones * (1 + bonus));
-            const finalFragments = Math.floor(expeditionData.rewards.fragments * (1 + bonus));
-
-            expeditionSlots[currentDispatchSlotIndex] = {
-                status: 'active',
-                expeditionId: selectedExpeditionId,
-                team: [...selectedTeam],
-                teamPower: totalPower,
-                startTime: Date.now(),
-                endTime: Date.now() + expeditionData.duration * 1000,
-                rewards: { stones: finalStones, fragments: finalFragments }
-            };
-
-            dom.dispatchModal.classList.add('hidden');
-            populateExpeditionModal();
-            saveData();
-        }
-
-        function claimExpedition(slotIndex) {
-            const slot = expeditionSlots[slotIndex];
-            if (slot.status === 'completed') {
-                stardustStones += slot.rewards.stones;
-                fragments += slot.rewards.fragments;
-                showToast(`遠征獎勵: 💎${slot.rewards.stones}, ✨${slot.rewards.fragments}`);
-                expeditionSlots[slotIndex] = { status: 'idle' };
-                populateExpeditionModal();
-                updateAllUI();
-                saveData();
-            }
-        }
         
         // --- 資料存檔與重置 ---
         function getInitialAchievements() {
@@ -994,8 +1008,8 @@
                 'twoStar': { name: '星光乍現', description: '首次將任意角色升至2星', reward: { stones: 50, fragments: 10 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 2) },
                 'fourStar': { name: '星辰之力', description: '首次將任意角色升至4星', reward: { stones: 200, fragments: 50 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 4) },
                 'first5Star': { name: '登峰造極', description: '首次將任意角色升至5星', reward: { stones: 400, fragments: 80 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.stars >= 5) },
-                'srPerfection': { name: 'SR的極致', description: '擁有一名滿星(4星)的SR角色', reward: { stones: 300, fragments: 60 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SR' && c.stars >= CHARACTERS.SR.maxStars) },
-                'fiveStarSSR': { name: '傳說的巔峰', description: '擁有一名滿星(5星)的SSR角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SSR' && c.stars >= CHARACTERS.SSR.maxStars) },
+                'srPerfection': { name: 'SR的極致', description: '擁有一名滿星(4星)のSR角色', reward: { stones: 300, fragments: 60 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SR' && c.stars >= CHARACTERS.SR.maxStars) },
+                'fiveStarSSR': { name: '傳說の巔峰', description: '擁有一名滿星(5星)のSSR角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).some(c => c.rarity === 'SSR' && c.stars >= CHARACTERS.SSR.maxStars) },
                 'starForged': { name: '星辰鑄造者', description: '擁有3名或以上滿星角色', reward: { stones: 600, fragments: 120 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= CHARACTERS[c.rarity].maxStars).length >= 3 },
                 'fiveStarTeam': { name: '五星戰隊', description: '擁有5名或以上滿星角色', reward: { stones: 800, fragments: 150 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= CHARACTERS[c.rarity].maxStars).length >= 5 },
                 'threeStarTeam': { name: '三星戰隊', description: '擁有5名或以上三星角色', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => Object.values(characterCollection).filter(c => c.stars >= 3).length >= 5 },
@@ -1005,12 +1019,12 @@
                 'rElite': { name: 'R級精英', description: '將所有R級角色升至2星', reward: { stones: 150, fragments: 80 }, status: 'locked', condition: () => CHARACTERS.R.characters.every(name => characterCollection[name] && characterCollection[name].stars >= 2) },
                 'srElite': { name: 'SR級精英', description: '將所有SR級角色升至2星', reward: { stones: 200, fragments: 100 }, status: 'locked', condition: () => CHARACTERS.SR.characters.every(name => characterCollection[name] && characterCollection[name].stars >= 2) },
                 'earlyMaxOut': { name: '早期優勢', description: '100抽內就擁有一名滿星角色', reward: { stones: 250, fragments: 50 }, status: 'locked', condition: () => totalPulls <= 100 && Object.values(characterCollection).some(c => c.stars >= CHARACTERS[c.rarity].maxStars) },
-                'firstSSR': { name: '超凡的片鱗', description: '首次召喚到SSR角色', reward: { stones: 200, fragments: 20 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
-                'firstUR': { name: '神話的開端', description: '首次召喚到UR角色', reward: { stones: 400, fragments: 40 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
+                'firstSSR': { name: '超凡の片鱗', description: '首次召喚到SSR角色', reward: { stones: 200, fragments: 20 }, status: 'locked', condition: () => rarityCounts.SSR > 0 },
+                'firstUR': { name: '神話の開端', description: '首次召喚到UR角色', reward: { stones: 400, fragments: 40 }, status: 'locked', condition: () => rarityCounts.UR > 0 },
                 'allN': { name: 'NNNNN?', description: '在10連召喚中5張以上為N卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'N').length >= 5) },
                 'allR': { name: 'RRRRR!', description: '在10連召喚中5張以上為R卡', reward: { stones: 120, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'R').length >= 5) },
-                'doubleSSR': { name: '雙倍的喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 250, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 2) },
-                'tripleSSR': { name: '三倍的喜悅', description: '在一次10連召喚中獲得3名或以上SSR/UR角色', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 3) },
+                'doubleSSR': { name: '雙倍の喜悅', description: '在一次10連召喚中獲得2名或以上SSR/UR角色', reward: { stones: 250, fragments: 40 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 2) },
+                'tripleSSR': { name: '三倍の喜悅', description: '在一次10連召喚中獲得3名或以上SSR/UR角色', reward: { stones: 500, fragments: 100 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => ['SSR', 'UR', 'UUR'].includes(r.rarity)).length >= 3) },
                 'perfectTen': { name: '完美的十連', description: '十連召喚中沒有N卡', reward: { stones: 150, fragments: 30 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && !h.results.some(r => r.rarity === 'N')) },
                 'singlePullLuck': { name: '一發入魂', description: '在「召喚x1」中直接獲得SSR或UR角色', reward: { stones: 100, fragments: 20 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length === 1 && (h.results[0].rarity === 'SSR' || h.results[0].rarity === 'UR')) },
                 'archdukeOfEurope': { name: '歐洲大公', description: '在一次10連召喚中獲得2名或以上UR角色', reward: { stones: 1000, fragments: 200 }, status: 'locked', condition: () => gachaHistory.some(h => h.results.length >= 10 && h.results.filter(r => r.rarity === 'UR').length >= 2) },
@@ -1067,6 +1081,7 @@
             noSsrStreak = 0;
             pullsInPuddingMode = 0;
             expeditionSlots = [{ status: 'idle' }, { status: 'idle' }, { status: 'idle' }];
+            towerLevel = 1;
             achievements = getInitialAchievements();
         }
 
@@ -1086,7 +1101,7 @@
 
         function saveData() {
             const gameState = { 
-                pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots,
+                pityCounters, rarityCounts, characterCollection, gachaHistory, totalPulls, stardustStones, fragments, achievements, expeditionSlots, towerLevel,
                 lastDailyClaim: new Date().toDateString(), luckCalculations, fragmentClaims, historyViews, infoViews, ssrPityTriggered, 
                 fragmentSummons, dailyClaims, skipAnimationUses, totalStonesSpent, maxConstellationPoints, noSsrStreak, pullsInPuddingMode
             };
@@ -1105,6 +1120,7 @@
                 fragments = gameState.fragments;
                 achievements = { ...getInitialAchievements(), ...gameState.achievements };
                 expeditionSlots = gameState.expeditionSlots || [{ status: 'idle' }, { status: 'idle' }, { status: 'idle' }];
+                towerLevel = gameState.towerLevel || 1;
                 luckCalculations = gameState.luckCalculations || 0;
                 fragmentClaims = gameState.fragmentClaims || 0;
                 historyViews = gameState.historyViews || 0;
@@ -1145,4 +1161,3 @@
     </script>
 </body>
 </html>
-
